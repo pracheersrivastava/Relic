@@ -1,0 +1,116 @@
+.coursePage {
+  min-height: 100vh;
+}
+
+.main {
+  padding-bottom: var(--spacing-xl);
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-label);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.courseLayout {
+  display: grid;
+  grid-template-columns: 1fr var(--sidebar-width);
+  gap: var(--spacing-lg);
+  align-items: start;
+}
+
+.contentArea {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.sidebarWrapper {
+  position: sticky;
+  top: var(--spacing-md);
+}
+
+.progressSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--color-card-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--button-radius);
+}
+
+.progressHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionTitle {
+  font-size: var(--font-size-section-header);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-section-header);
+  color: var(--color-text-primary);
+}
+
+.practiceSection {
+  padding: var(--spacing-md);
+  background-color: var(--color-card-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--button-radius);
+}
+
+.practiceContent {
+  margin-top: var(--spacing-md);
+}
+
+.practiceDescription {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.notFound {
+  text-align: center;
+  padding: var(--spacing-xl);
+}
+
+.notFoundTitle {
+  font-size: var(--font-size-page-title);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-page-title);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.notFoundText {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Mobile: stack sidebar below content */
+@media (max-width: 768px) {
+  .courseLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebarWrapper {
+    position: static;
+  }
+}

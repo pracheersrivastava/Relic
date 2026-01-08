@@ -1,0 +1,27 @@
+.coursesPage {
+  min-height: 100vh;
+}
+
+.main {
+  padding-bottom: var(--spacing-xl);
+}
+
+.pageTitle {
+  font-size: var(--font-size-page-title);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-page-title);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.courseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--card-gap);
+}
+
+@media (max-width: 640px) {
+  .courseGrid {
+    grid-template-columns: 1fr;
+  }
+}

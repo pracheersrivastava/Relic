@@ -1,0 +1,180 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+/* Design System Tokens */
+:root {
+  /* Light Mode Colors */
+  --color-primary: #0056D2;
+  --color-primary-hover: #0041A8;
+  --color-success: #1E8E3E;
+  --color-text-primary: #1F1F1F;
+  --color-text-secondary: #5F6368;
+  --color-background: #FFFFFF;
+  --color-card-background: #F8F9FA;
+  --color-border: #E0E0E0;
+  --color-disabled: #BDBDBD;
+
+  /* Typography */
+  --font-family: 'Inter', system-ui, Arial, sans-serif;
+  
+  /* Font Sizes */
+  --font-size-page-title: 24px;
+  --font-size-section-header: 18px;
+  --font-size-body: 16px;
+  --font-size-label: 14px;
+  --font-size-button: 16px;
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+
+  /* Line Heights */
+  --line-height-page-title: 32px;
+  --line-height-section-header: 26px;
+  --line-height-body: 24px;
+  --line-height-label: 20px;
+  --line-height-button: 24px;
+
+  /* Spacing (8px base unit) */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Layout */
+  --max-width: 1200px;
+  --min-width: 320px;
+  --sidebar-width: 320px;
+
+  /* Component Tokens */
+  --button-height: 44px;
+  --button-padding-y: 12px;
+  --button-padding-x: 16px;
+  --button-radius: 6px;
+  --input-height: 44px;
+  --input-radius: 6px;
+  --card-padding: 16px;
+  --card-gap: 12px;
+  --progress-height: 6px;
+  --progress-radius: 3px;
+  --tap-target: 48px;
+}
+
+/* Dark Mode Colors */
+[data-theme="dark"] {
+  --color-primary: #4C8DFF;
+  --color-primary-hover: #6BA3FF;
+  --color-success: #34A853;
+  --color-text-primary: #EAEAEA;
+  --color-text-secondary: #A1A1A1;
+  --color-background: #121212;
+  --color-card-background: #1E1E1E;
+  --color-border: #2C2C2C;
+  --color-disabled: #5F6368;
+}
+
+/* Reset and Base Styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  min-width: var(--min-width);
+  text-align: left;
+}
+
+/* Typography Classes */
+.page-title {
+  font-size: var(--font-size-page-title);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-page-title);
+  color: var(--color-text-primary);
+}
+
+.section-header {
+  font-size: var(--font-size-section-header);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-section-header);
+  color: var(--color-text-primary);
+}
+
+.body-text {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body);
+  color: var(--color-text-primary);
+}
+
+.ui-label {
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-label);
+  color: var(--color-text-secondary);
+}
+
+/* Layout Container */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* Focus States */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Remove default button styles */
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Remove default input styles */
+input {
+  border: none;
+  outline: none;
+  font-family: inherit;
+}
+
+/* Links */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Utility Classes */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
