@@ -1,23 +1,40 @@
-# Coursera Clone - Frontend Design System
+# Coursera Clone
 
-A Coursera-style learning platform built with Next.js, featuring a complete design system following strict guidelines.
+A learning platform frontend built with Next.js 14 and TypeScript.
 
-## Features
+## Tech Stack
 
-- ✅ **Dark Mode Toggle** - Frontend-only theme switching with localStorage persistence
-- ✅ **Login Page** - Centered card with email/password inputs
-- ✅ **Course Selection Page** - Grid layout with course cards showing progress
-- ✅ **Course Learning Page** - Video container, sidebar navigation, progress tracking
-- ✅ **Responsive Design** - Works on desktop and mobile devices
+- Next.js 14 (App Router)
+- TypeScript
+- CSS Modules
 
 ## Getting Started
 
 ```bash
-# Install dependencies
 npm install
-
-# Run development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the application.
+Open http://localhost:3000
+
+## Project Structure
+
+```
+src/
+├── app/                  # Pages (login, courses, course details)
+├── components/           # Reusable UI components
+├── data/                 # Static course data
+└── styles/               # Global styles and design tokens
+```
+
+## Pages
+
+| Route | Description |
+|-------|-------------|
+| `/` | Login |
+| `/courses` | Course catalog |
+| `/course/[id]` | Course player with video and sidebar |
+
+## Notes
+
+This is a frontend-only prototype. Authentication and video playback are mocked.
