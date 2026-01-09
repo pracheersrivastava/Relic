@@ -1,1 +1,1 @@
-export const DB_NAME = "ProjectDB"
+export const DB_NAME = "taligent"

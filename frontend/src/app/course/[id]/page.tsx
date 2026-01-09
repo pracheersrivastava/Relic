@@ -1,16 +1,37 @@
 'use client';
 
-import React from 'react';
-import { useParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './page.module.css';
 import { Header, VideoContainer, Sidebar, ProgressBar, Button } from '@/components';
 import { getCourseById, getCurrentLesson } from '@/data/courses';
+import { api } from '@/lib/api';
 
 export default function CourseLearningPage() {
   const params = useParams();
+  const router = useRouter();
   const courseId = params.id as string;
   const course = getCourseById(courseId);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!api.isAuthenticated()) {
+      router.push('/');
+    } else {
+      setIsLoading(false);
+    }
+  }, [router]);
+
+  if (isLoading) {
+    return (
+      <div className={styles.coursePage}>
+        <div className="container">
+          <div className={styles.loading}>Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   if (!course) {
     return (
@@ -73,7 +94,7 @@ export default function CourseLearningPage() {
                   <p className={styles.practiceDescription}>
                     Complete the practice exercises to reinforce your learning.
                   </p>
-                  <Button disabled disabledReason="Backend pending">
+                  <Button disabled disabledReason="Feature coming soon">
                     Start assignment
                   </Button>
                 </div>

@@ -20,6 +20,15 @@
   gap: var(--card-gap);
 }
 
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+}
+
 @media (max-width: 640px) {
   .courseGrid {
     grid-template-columns: 1fr;
