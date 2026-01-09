@@ -41,17 +41,40 @@
   gap: var(--spacing-md);
 }
 
-.disclaimer {
+.error {
   font-size: var(--font-size-label);
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-label);
-  color: var(--color-text-secondary);
+  color: #dc2626;
+  text-align: center;
+  padding: var(--spacing-sm);
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--button-radius);
+}
+
+[data-theme="dark"] .error {
+  background-color: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.switchAuth {
   text-align: center;
   margin-top: var(--spacing-md);
-  padding: var(--spacing-sm);
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--button-radius);
+}
+
+.switchButton {
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.switchButton:hover {
+  color: var(--color-primary-hover);
 }
 
 .themeToggleWrapper {

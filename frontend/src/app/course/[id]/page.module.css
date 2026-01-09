@@ -6,6 +6,15 @@
   padding-bottom: var(--spacing-xl);
 }
 
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+}
+
 .backLink {
   display: inline-flex;
   align-items: center;
