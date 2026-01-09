@@ -1,104 +1,106 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
 import styles from './page.module.css';
-import { Input, Button, ThemeToggle } from '@/components';
-import { api } from '@/lib/api';
+import { Navbar, HeroBanner, CourseRow, CategoryCards } from '@/components';
+import { 
+  trendingCourses, 
+  popularCourses, 
+  newCourses, 
+  aiSkillsCourses,
+  partners 
+} from '@/data/homepageData';
 
-export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [isRegister, setIsRegister] = useState(false);
-  const [fullname, setFullname] = useState('');
-  const router = useRouter();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      if (isRegister) {
-        const response = await api.register(fullname, email, password);
-        if (response.success) {
-          setIsRegister(false);
-          setError('');
-          alert('Registration successful! Please login.');
-        } else {
-          setError(response.message || 'Registration failed');
-        }
-      } else {
-        const response = await api.login(email, password);
-        if (response.success) {
-          router.push('/courses');
-        } else {
-          setError(response.message || 'Login failed');
-        }
-      }
-    } catch (err) {
-      setError('Connection error. Is the backend running?');
-    } finally {
-      setLoading(false);
-    }
-  };
-
+export default function HomePage() {
   return (
-    <div className={styles.loginPage}>
-      <div className={styles.themeToggleWrapper}>
-        <ThemeToggle />
-      </div>
-      <div className={styles.loginCard}>
-        <div className={styles.loginHeader}>
-          <h1 className={styles.logo}>Coursera</h1>
-          <p className={styles.subtitle}>
-            {isRegister ? 'Create an account' : 'Log in to continue learning'}
-          </p>
-        </div>
-        <form className={styles.loginForm} onSubmit={handleSubmit}>
-          {isRegister && (
-            <Input
-              id="fullname"
-              label="Full name"
-              type="text"
-              placeholder="Enter your full name"
-              value={fullname}
-              onChange={(e) => setFullname(e.target.value)}
-            />
-          )}
-          <Input
-            id="email"
-            label="Email"
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+    <div className={styles.homepage}>
+      <Navbar />
+      
+      <main className={styles.main}>
+        <HeroBanner />
+        
+        <CategoryCards />
+        
+        {/* Partners Section */}
+        <section className={styles.partnersSection}>
+          <h3 className={styles.partnersTitle}>
+            Learn from 350+ leading universities and companies
+          </h3>
+          <div className={styles.partnersRow}>
+            {partners.map((partner) => (
+              <div key={partner.name} className={styles.partnerBadge}>
+                <span className={styles.partnerLogo}>{partner.logo}</span>
+                <span className={styles.partnerName}>{partner.name}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Course Sections with Auto-Scroll */}
+        <section className={styles.courseSections}>
+          <h2 className={styles.sectionMainTitle}>Trending courses</h2>
+          
+          <CourseRow 
+            title="Most popular →" 
+            courses={trendingCourses} 
+            direction="left"
           />
-          <Input
-            id="password"
-            label="Password"
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+          
+          <CourseRow 
+            title="Weekly spotlight →" 
+            courses={popularCourses} 
+            direction="right"
           />
-          {error && <div className={styles.error}>{error}</div>}
-          <Button type="submit" fullWidth disabled={loading}>
-            {loading ? 'Please wait...' : (isRegister ? 'Register' : 'Log in')}
-          </Button>
-        </form>
-        <div className={styles.switchAuth}>
-          <button 
-            type="button" 
-            onClick={() => { setIsRegister(!isRegister); setError(''); }}
-            className={styles.switchButton}
-          >
-            {isRegister ? 'Already have an account? Log in' : "Don't have an account? Register"}
-          </button>
+          
+          <CourseRow 
+            title="In-demand AI skills →" 
+            courses={aiSkillsCourses} 
+            direction="left"
+          />
+          
+          <CourseRow 
+            title="New courses →" 
+            courses={newCourses} 
+            direction="right"
+          />
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className={styles.footer}>
+        <div className={styles.footerContent}>
+          <div className={styles.footerBrand}>
+            <span className={styles.footerLogo}>Coursera</span>
+            <p className={styles.footerTagline}>
+              Learn without limits
+            </p>
+          </div>
+          <div className={styles.footerLinks}>
+            <div className={styles.footerColumn}>
+              <h4>Coursera</h4>
+              <a href="#">About</a>
+              <a href="#">Careers</a>
+              <a href="#">Catalog</a>
+            </div>
+            <div className={styles.footerColumn}>
+              <h4>Community</h4>
+              <a href="#">Learners</a>
+              <a href="#">Partners</a>
+              <a href="#">Developers</a>
+            </div>
+            <div className={styles.footerColumn}>
+              <h4>More</h4>
+              <a href="#">Press</a>
+              <a href="#">Contact</a>
+              <a href="#">Help</a>
+            </div>
+          </div>
         </div>
-      </div>
+        <div className={styles.footerBottom}>
+          <p>© 2026 Coursera Inc. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }
+

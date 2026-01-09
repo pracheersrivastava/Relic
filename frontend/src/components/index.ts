@@ -6,3 +6,8 @@ export { VideoContainer } from './VideoContainer';
 export { Sidebar } from './Sidebar';
 export { ThemeToggle } from './ThemeToggle';
 export { Header } from './Header';
+export { Navbar } from './Navbar';
+export { HeroBanner } from './HeroBanner';
+export { CourseRow } from './CourseRow';
+export { HomepageCourseCard } from './HomepageCourseCard';
+export { CategoryCards } from './CategoryCards';
