@@ -112,9 +112,42 @@ export const api = {
     return data;
   },
 
-  logout() {
-    setAccessToken(null);
-    localStorage.removeItem('refreshToken');
+  async logout(): Promise<ApiResponse<null>> {
+    const token = getAccessToken();
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/logout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+      
+      // Clear local storage regardless of response
+      setAccessToken(null);
+      
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: null,
+          message: 'Logout failed',
+          success: false,
+        };
+      }
+      
+      return await response.json();
+    } catch (error) {
+      // Clear local storage even if request fails
+      setAccessToken(null);
+      return {
+        statusCode: 500,
+        data: null,
+        message: 'Logout failed',
+        success: false,
+      };
+    }
   },
 
   // Check if user is logged in
