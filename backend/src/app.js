@@ -16,9 +16,10 @@ app.use(cookieParser());
 //routes
 
 import userRouter from "./routes/user.routes.js";
+import courseRouter from"./routes/courses.routes.js";
 
-
-app.use("/api/v1/users",userRouter) 
+app.use("/api/v1/users",userRouter);
+app.use("/api/v1/courses",courseRouter);
 
 //http://localhost:5000/api/v1/users/registers
 
