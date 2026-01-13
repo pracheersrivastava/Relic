@@ -24,7 +24,7 @@ const getEnrolledCourses = asyncHandler(async(req,res)=>{
     const userId = req.user._id;
     const courses = await Enrollment.aggregate([
         {
-            match: {userId},
+            $match: {userId},
         },
         {
             $lookup: {
