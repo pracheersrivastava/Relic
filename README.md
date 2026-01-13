@@ -72,11 +72,20 @@ Runs on http://localhost:3000
 
 - **Homepage**: Coursera-style UI with hero banner, category cards, course grid, and animated auto-scrolling course carousels with navigation arrows
 - **Authentication**: User registration and login with JWT tokens, AuthContext for global state
-- **Shopping Cart**: Add/remove courses, checkout flow, CartContext for global state
+- **Shopping Cart**: Add/remove courses with real-time updates, checkout flow, CartContext for global state
 - **My Learning**: View enrolled courses after purchase
-- **Dark Mode**: Toggle between light and dark themes
+- **Dark Mode**: Toggle between light and dark themes with iOS-style glassmorphism effects
 - **Responsive Design**: Works on desktop and mobile
 - **Course Images**: Dynamic course images from Unsplash
+- **Premium UI**: Modern card designs with hover effects, smooth animations, and gradient accents
+
+## Recent Updates
+
+- Fixed cart remove functionality to properly return populated cart data
+- Fixed React hydration mismatch errors for theme toggling
+- Added glassmorphism effects for dark mode
+- Improved cart service to return consistent data with totalPrice
+- Unified ThemeContext state management across components
 
 ## API Endpoints
 
