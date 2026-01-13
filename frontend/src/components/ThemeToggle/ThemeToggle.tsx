@@ -1,49 +1,23 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useTheme } from '@/context/ThemeContext';
 import styles from './ThemeToggle.module.css';
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-  };
-
-  // Prevent hydration mismatch by not rendering until mounted
-  if (!mounted) {
-    return (
-      <button
-        className={styles.toggleButton}
-        aria-label="Toggle theme"
-        title="Toggle theme"
-      >
-        🌙
-      </button>
-    );
-  }
+  const { theme, toggleTheme, mounted } = useTheme();
 
   return (
     <button
       className={styles.toggleButton}
-      onClick={toggleTheme}
-      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-      title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+      onClick={mounted ? toggleTheme : undefined}
+      aria-label="Toggle theme"
+      title="Toggle theme"
+      suppressHydrationWarning
     >
-      {theme === 'light' ? '🌙' : '☀️'}
+      <span suppressHydrationWarning>
+        {mounted ? (theme === 'light' ? '🌙' : '☀️') : '🌙'}
+      </span>
     </button>
   );
 }

@@ -32,7 +32,8 @@ export const addToCart = async (userId, courseId) => {
             userId,
             items: [{ courseId, price: course.price || 1 }]
         });
-        return cart;
+        // Return populated cart
+        return getUserCart(userId);
     }
 
     // Prevent duplicate cart items
@@ -47,7 +48,8 @@ export const addToCart = async (userId, courseId) => {
     cart.items.push({ courseId, price: course.price || 1 });
     await cart.save();
 
-    return cart;
+    // Return populated cart
+    return getUserCart(userId);
 };
 
 /**
@@ -91,7 +93,9 @@ export const removeFromCart = async (userId, courseId) => {
     );
 
     await cart.save();
-    return cart;
+    
+    // Return populated cart with totalPrice
+    return getUserCart(userId);
 };
 
 /**
