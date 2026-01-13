@@ -143,7 +143,8 @@ export const mockCheckout = async (userId) => {
         totalAmount,
         paymentStatus: "paid"
     });
-
+    await createEnrollmentsFromOrder(order);
+    
     // Create enrollments
     await Enrollment.insertMany(
         items.map(item => ({
