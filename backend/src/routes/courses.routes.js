@@ -6,7 +6,9 @@ import {
 import {verifyJWT} from "../middlewares/auth.middleware.js";
 const router = Router();
 
-router.get("/all-courses",verifyJWT,getAllCourses);
-router.get("/my-courses",verifyJWT,getEnrolledCourses)
+// Public route - no auth required
+router.get("/all-courses", getAllCourses);
+// Protected route - requires auth
+router.get("/my-courses", verifyJWT, getEnrolledCourses)
 
 export default router;

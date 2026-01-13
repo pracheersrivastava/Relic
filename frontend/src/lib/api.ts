@@ -1,13 +1,13 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
 
-interface ApiResponse<T> {
+export interface ApiResponse<T> {
   statusCode: number;
   data: T;
   message: string;
   success: boolean;
 }
 
-interface User {
+export interface User {
   _id: string;
   email: string;
   fullname: string;
@@ -21,6 +21,43 @@ interface LoginResponse {
 
 interface RegisterResponse {
   user: User;
+}
+
+// Course type from backend
+export interface Course {
+  _id: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  price: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Cart types
+export interface CartItem {
+  courseId: Course;
+  price: number;
+  addedAt: string;
+}
+
+export interface Cart {
+  _id?: string;
+  cartId?: string;
+  userId?: string;
+  items: CartItem[];
+  totalPrice?: number;
+  totalAmount?: number;
+}
+
+// Order type
+export interface Order {
+  _id: string;
+  userId: string;
+  items: Array<{ courseId: string; price: number }>;
+  totalAmount: number;
+  status: string;
+  createdAt: string;
 }
 
 // Store tokens
@@ -153,5 +190,246 @@ export const api = {
   // Check if user is logged in
   isAuthenticated(): boolean {
     return !!getAccessToken();
+  },
+
+  // Course endpoints
+  async getAllCourses(): Promise<ApiResponse<Course[]>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/courses/all-courses`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: [],
+          message: 'Failed to fetch courses',
+          success: false,
+        };
+      }
+      
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: [],
+        message: 'Failed to fetch courses',
+        success: false,
+      };
+    }
+  },
+
+  async getEnrolledCourses(): Promise<ApiResponse<Course[]>> {
+    const token = getAccessToken();
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/courses/my-courses`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: [],
+          message: 'Failed to fetch enrolled courses',
+          success: false,
+        };
+      }
+      
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: [],
+        message: 'Failed to fetch enrolled courses',
+        success: false,
+      };
+    }
+  },
+
+  // Cart endpoints
+  async getCart(): Promise<ApiResponse<Cart>> {
+    const token = getAccessToken();
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/cart`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: {} as Cart,
+          message: 'Failed to fetch cart',
+          success: false,
+        };
+      }
+      
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: {} as Cart,
+        message: 'Failed to fetch cart',
+        success: false,
+      };
+    }
+  },
+
+  async addToCart(courseId: string): Promise<ApiResponse<Cart>> {
+    const token = getAccessToken();
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/cart/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+        body: JSON.stringify({ courseId }),
+      });
+      
+      if (!response.ok) {
+        const errorMessages: Record<number, string> = {
+          400: 'Course already in cart',
+          401: 'Please login to add to cart',
+          404: 'Course not found',
+        };
+        
+        return {
+          statusCode: response.status,
+          data: {} as Cart,
+          message: errorMessages[response.status] || 'Failed to add to cart',
+          success: false,
+        };
+      }
+      
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: {} as Cart,
+        message: 'Failed to add to cart',
+        success: false,
+      };
+    }
+  },
+
+  async removeFromCart(courseId: string): Promise<ApiResponse<Cart>> {
+    const token = getAccessToken();
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/cart/remove/${courseId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: {} as Cart,
+          message: 'Failed to remove from cart',
+          success: false,
+        };
+      }
+      
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: {} as Cart,
+        message: 'Failed to remove from cart',
+        success: false,
+      };
+    }
+  },
+
+  async checkout(): Promise<ApiResponse<Order>> {
+    const token = getAccessToken();
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/cart/pay`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        const errorMessages: Record<number, string> = {
+          400: 'Cart is empty',
+          401: 'Please login to checkout',
+        };
+        
+        return {
+          statusCode: response.status,
+          data: {} as Order,
+          message: errorMessages[response.status] || 'Checkout failed',
+          success: false,
+        };
+      }
+      
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: {} as Order,
+        message: 'Checkout failed',
+        success: false,
+      };
+    }
+  },
+
+  async clearCart(): Promise<ApiResponse<null>> {
+    const token = getAccessToken();
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/cart/clear`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: null,
+          message: 'Failed to clear cart',
+          success: false,
+        };
+      }
+      
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: null,
+        message: 'Failed to clear cart',
+        success: false,
+      };
+    }
   },
 };

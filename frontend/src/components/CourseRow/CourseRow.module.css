@@ -2,6 +2,7 @@
   padding: var(--spacing-lg) var(--spacing-lg);
   max-width: 1400px;
   margin: 0 auto;
+  position: relative;
 }
 
 .sectionHeader {
@@ -17,6 +18,45 @@
   color: var(--color-text-primary);
 }
 
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.arrowButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-card-background);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.arrowButton:hover {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(0, 86, 210, 0.3);
+}
+
+.arrowButton:active {
+  transform: scale(0.95);
+}
+
+.arrowButton.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .viewAllButton {
   font-size: var(--font-size-label);
   font-weight: var(--font-weight-semibold);
@@ -24,13 +64,47 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--button-radius);
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  margin-left: var(--spacing-sm);
 }
 
 .viewAllButton:hover {
   background-color: rgba(0, 86, 210, 0.1);
+  transform: translateX(4px);
+}
+
+.trackWrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.gradientLeft,
+.gradientRight {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.trackWrapper:hover .gradientLeft,
+.trackWrapper:hover .gradientRight {
+  opacity: 1;
+}
+
+.gradientLeft {
+  left: 0;
+  background: linear-gradient(to right, var(--color-background) 0%, transparent 100%);
+}
+
+.gradientRight {
+  right: 0;
+  background: linear-gradient(to left, var(--color-background) 0%, transparent 100%);
 }
 
 .courseTrack {
@@ -39,10 +113,38 @@
   overflow-x: hidden;
   scroll-behavior: smooth;
   padding: var(--spacing-sm) 0;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .courseTrack::-webkit-scrollbar {
   display: none;
+}
+
+.cardWrapper {
+  flex-shrink: 0;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+.cardWrapper:hover {
+  transform: translateY(-8px) scale(1.02);
+  z-index: 10;
+}
+
+/* Animation for cards entering view */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.cardWrapper {
+  animation: fadeSlideIn 0.5s ease-out forwards;
 }
 
 /* Responsive */
@@ -53,5 +155,15 @@
 
   .sectionTitle {
     font-size: var(--font-size-body);
+  }
+
+  .arrowButton {
+    width: 36px;
+    height: 36px;
+  }
+
+  .gradientLeft,
+  .gradientRight {
+    width: 40px;
   }
 }
