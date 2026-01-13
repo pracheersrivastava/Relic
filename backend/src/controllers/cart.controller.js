@@ -67,10 +67,3 @@ export const clearCart = asyncHandler(async (req, res) => {
         new ApiResponce(200, null, "Cart cleared")
     );
 });
-export{
-    addToCart,
-    getMyCart,
-    removeFromCart,
-    payCart,
-    clearCart,
-}

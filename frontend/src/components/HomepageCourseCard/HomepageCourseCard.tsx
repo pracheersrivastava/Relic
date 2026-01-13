@@ -35,9 +35,18 @@ export const HomepageCourseCard: React.FC<HomepageCourseCardProps> = ({ course }
     <>
       <div className={styles.card}>
         <div className={styles.imageContainer}>
-          <div className={styles.placeholderImage}>
-            <span className={styles.providerBadge}>{course.providerLogo}</span>
-          </div>
+          {course.image && course.image.startsWith('http') ? (
+            <img 
+              src={course.image} 
+              alt={course.title}
+              className={styles.courseImage}
+            />
+          ) : (
+            <div className={styles.placeholderImage}>
+              <span className={styles.providerBadge}>{course.providerLogo}</span>
+            </div>
+          )}
+          <span className={styles.providerBadge}>{course.providerLogo}</span>
         </div>
         <div className={styles.content}>
           <div className={styles.providerRow}>
@@ -46,10 +55,15 @@ export const HomepageCourseCard: React.FC<HomepageCourseCardProps> = ({ course }
           <h3 className={styles.title}>{course.title}</h3>
           <span className={styles.type}>{course.type}</span>
           <div className={styles.ratingRow}>
-            <span className={styles.rating}>{course.rating}</span>
+            <span className={styles.rating}>{Number(course.rating).toFixed(1)}</span>
             <div className={styles.stars}>{renderStars(course.rating)}</div>
             <span className={styles.reviewCount}>({course.reviewCount})</span>
           </div>
+          {course.price !== undefined && (
+            <div className={styles.priceRow}>
+              <span className={styles.price}>${course.price}</span>
+            </div>
+          )}
           <button className={styles.viewButton} onClick={handleViewCourse}>
             View Course
           </button>

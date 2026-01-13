@@ -6,23 +6,23 @@ import {
     payCart,
     clearCart
 } from "../controllers/cart.controller.js";
-import { auth } from "../middlewares/auth.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
 // Get current user's cart
-router.get("/", auth, getMyCart);
+router.get("/", verifyJWT, getMyCart);
 
 // Add course to cart
-router.post("/add", auth, addToCart);
+router.post("/add", verifyJWT, addToCart);
 
 // Remove course from cart
-router.delete("/remove/:courseId", auth, removeFromCart);
+router.delete("/remove/:courseId", verifyJWT, removeFromCart);
 
 // Mock payment → buy all courses in cart
-router.post("/pay", auth, payCart);
+router.post("/pay", verifyJWT, payCart);
 
 // Clear cart
-router.delete("/clear", auth, clearCart);
+router.delete("/clear", verifyJWT, clearCart);
 
 export default router;

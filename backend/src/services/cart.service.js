@@ -30,7 +30,7 @@ export const addToCart = async (userId, courseId) => {
     if (!cart) {
         cart = await Cart.create({
             userId,
-            items: [{ courseId }]
+            items: [{ courseId, price: course.price || 1 }]
         });
         return cart;
     }
@@ -44,7 +44,7 @@ export const addToCart = async (userId, courseId) => {
         throw new ApiError(400, "Course already in cart");
     }
 
-    cart.items.push({ courseId });
+    cart.items.push({ courseId, price: course.price || 1 });
     await cart.save();
 
     return cart;
@@ -60,19 +60,19 @@ export const getUserCart = async (userId) => {
     if (!cart) {
         return {
             items: [],
-            totalAmount: 0
+            totalPrice: 0
         };
     }
 
-    const totalAmount = cart.items.reduce(
-        (sum, item) => sum + item.courseId.price,
+    const totalPrice = cart.items.reduce(
+        (sum, item) => sum + (item.courseId?.price || item.price || 1),
         0
     );
 
     return {
         cartId: cart._id,
         items: cart.items,
-        totalAmount
+        totalPrice
     };
 };
 

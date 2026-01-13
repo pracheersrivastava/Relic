@@ -9,24 +9,49 @@
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-button);
   text-align: center;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   cursor: pointer;
   gap: var(--spacing-sm);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.button:hover::after {
+  opacity: 1;
 }
 
 .primary {
   background-color: var(--color-primary);
   color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 86, 210, 0.2);
 }
 
 .primary:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
+  box-shadow: 0 4px 12px rgba(0, 86, 210, 0.3);
+  transform: translateY(-1px);
+}
+
+.primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 86, 210, 0.2);
 }
 
 .primary:disabled {
   background-color: var(--color-disabled);
   color: var(--color-text-secondary);
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .secondary {
@@ -36,7 +61,8 @@
 }
 
 .secondary:hover:not(:disabled) {
-  background-color: var(--color-card-background);
+  background-color: rgba(0, 86, 210, 0.05);
+  border-color: var(--color-primary-hover);
 }
 
 .secondary:disabled {
