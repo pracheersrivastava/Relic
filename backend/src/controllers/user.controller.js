@@ -105,8 +105,17 @@ const logoutUser = asyncHandler(async(req,res)=>{
         new ApiResponce(200, null, "User logged out successfully")
     );
 });
-const changeCurrentPassword = asyncHandler(async(req,req)=>{
+const changeCurrentPassword = asyncHandler(async(req,res)=>{
         const {oldPassword, newPassword} = req.body;
+
+        if (!oldPassword || !newPassword) {
+            throw new ApiError(400, "Old password and new password are required");
+        };
+
+        if (oldPassword === newPassword) {
+            throw new ApiError(400, "New password must be different from old password");
+        };
+
         const user = await User.findById(req.user?._id)
         const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
@@ -115,15 +124,17 @@ const changeCurrentPassword = asyncHandler(async(req,req)=>{
         }
 
         user.password = newPassword;
-        await user.save({validateBeforeSave: false});
+        await user.save({validateBeforeSave: true});
 
         return res
         .status(200)
         .json(new ApiResponce(200,{},"Password changed successful"))
-});
+    }
+);
 export{
     registerUser,
     loginUser,
+    changeCurrentPassword,
     logoutUser,
-    changeCurrentPassword
+
 }
