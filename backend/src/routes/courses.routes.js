@@ -3,6 +3,7 @@ import {
     getAllCourses,
     getEnrolledCourses
 } from "../controllers/course.controller.js";
+import {registerReview} from "../controllers/reviews.controller.js";
 import {verifyJWT} from "../middlewares/auth.middleware.js";
 const router = Router();
 
@@ -10,5 +11,5 @@ const router = Router();
 router.get("/all-courses", getAllCourses);
 // Protected route - requires auth
 router.get("/my-courses", verifyJWT, getEnrolledCourses)
-
+router.post("/my-courses/:courseId/review", verifyJWT, registerReview);
 export default router;
