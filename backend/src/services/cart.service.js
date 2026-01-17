@@ -3,6 +3,7 @@ import { Course } from "../models/course.model.js";
 import { Enrollment } from "../models/enrollment.model.js";
 import { Order } from "../models/order.model.js";
 import { ApiError } from "../utils/ApiError.js";
+import { createEnrollmentsFromOrder } from "./enrollment.service.js";
 
 /**
  * Add a course to cart
@@ -147,17 +148,9 @@ export const mockCheckout = async (userId) => {
         totalAmount,
         paymentStatus: "paid"
     });
-    await createEnrollmentsFromOrder(order);
     
-    // Create enrollments
-    await Enrollment.insertMany(
-        items.map(item => ({
-            userId,
-            courseId: item.courseId,
-            orderId: order._id
-        })),
-        { ordered: false }
-    );
+    // Create enrollments from order
+    await createEnrollmentsFromOrder(order);
 
     // Clear cart
     await Cart.deleteOne({ userId });

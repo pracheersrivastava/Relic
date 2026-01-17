@@ -48,7 +48,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [refreshCart]);
 
   const addToCart = useCallback(async (courseId: string) => {
-    if (!isAuthenticated) {
+    // Check token directly to avoid stale isAuthenticated closure
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
       return { success: false, message: 'Please login to add to cart' };
     }
 
@@ -60,7 +62,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
     
     return { success: false, message: response.message || 'Failed to add to cart' };
-  }, [isAuthenticated]);
+  }, []);
 
   const removeFromCart = useCallback(async (courseId: string) => {
     const response = await api.removeFromCart(courseId);
