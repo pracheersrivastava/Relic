@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import {asyncHandler} from "../utils/asyncHandler.js";
 import {ApiError} from "../utils/ApiError.js";
 import {ApiResponce} from "../utils/ApiResponce.js";
@@ -14,9 +15,12 @@ const registerReview = asyncHandler(async(req,res)=>{
         throw new ApiError(400, "Rating must be between 1 and 5");
     }
 
+    // Convert courseId string to ObjectId for queries
+    const courseObjectId = new mongoose.Types.ObjectId(courseId);
+
     const isEnrolled = await Enrollment.findOne({
         userId,
-        courseId,
+        courseId: courseObjectId,
     });
 
     if (!isEnrolled) {
@@ -25,7 +29,7 @@ const registerReview = asyncHandler(async(req,res)=>{
 
     const existingReview = await Review.findOne({
         userId,
-        courseId,
+        courseId: courseObjectId,
     });
 
     if (existingReview) {
@@ -34,13 +38,14 @@ const registerReview = asyncHandler(async(req,res)=>{
 
     const review = await Review.create({
         userId,
-        courseId,
+        courseId: courseObjectId,
         rating,
         comment,
   });
 
+    // Aggregate to calculate average rating and total reviews
     const stats = await Review.aggregate([
-        { $match: { courseId } },
+        { $match: { courseId: courseObjectId } },
         {
         $group: {
             _id: "$courseId",
@@ -52,7 +57,7 @@ const registerReview = asyncHandler(async(req,res)=>{
 
     if (stats.length) {
         await Course.findByIdAndUpdate(courseId, {
-        averageRating: stats[0].avgRating,
+        averageRating: Math.round(stats[0].avgRating * 10) / 10, // Round to 1 decimal
         totalReviews: stats[0].totalReviews,
         });
     }
@@ -62,6 +67,71 @@ const registerReview = asyncHandler(async(req,res)=>{
   );
 });
 
+// Get user's review for a course
+const getUserReview = asyncHandler(async(req, res) => {
+    const { courseId } = req.params;
+    const userId = req.user._id;
+
+    // Convert courseId string to ObjectId
+    const courseObjectId = new mongoose.Types.ObjectId(courseId);
+
+    const review = await Review.findOne({
+        userId,
+        courseId: courseObjectId,
+    });
+
+    if (!review) {
+        return res.status(200).json(
+            new ApiResponce(200, null, "No review found")
+        );
+    }
+
+    return res.status(200).json(
+        new ApiResponce(200, review, "Review fetched successfully")
+    );
+});
+
+// Recalculate all course ratings from existing reviews
+const recalculateAllRatings = asyncHandler(async(req, res) => {
+    // Get all courses
+    const courses = await Course.find({});
+    
+    let updatedCount = 0;
+    
+    for (const course of courses) {
+        const stats = await Review.aggregate([
+            { $match: { courseId: course._id } },
+            {
+                $group: {
+                    _id: "$courseId",
+                    avgRating: { $avg: "$rating" },
+                    totalReviews: { $sum: 1 },
+                },
+            },
+        ]);
+        
+        if (stats.length) {
+            await Course.findByIdAndUpdate(course._id, {
+                averageRating: Math.round(stats[0].avgRating * 10) / 10,
+                totalReviews: stats[0].totalReviews,
+            });
+            updatedCount++;
+        } else {
+            // Reset to 0 if no reviews
+            await Course.findByIdAndUpdate(course._id, {
+                averageRating: 0,
+                totalReviews: 0,
+            });
+        }
+    }
+    
+    return res.status(200).json(
+        new ApiResponce(200, { updatedCourses: updatedCount }, "All course ratings recalculated")
+    );
+});
+
 export{
     registerReview,
+    getUserReview,
+    recalculateAllRatings,
 };

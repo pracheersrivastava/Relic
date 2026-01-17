@@ -22,17 +22,17 @@ A full-stack learning platform built with Next.js 14, Express.js, and MongoDB.
 CourseEra_Clone/
 ├── frontend/             # Next.js frontend
 │   └── src/
-│       ├── app/          # Pages (homepage, login, courses, cart)
+│       ├── app/          # Pages (homepage, login, courses, cart, course player)
 │       ├── components/   # Reusable UI components
-│       ├── context/      # Auth and Cart context providers
-│       ├── data/         # Static course data
+│       ├── context/      # Auth, Cart, and Theme context providers
+│       ├── data/         # Type definitions and static UI data
 │       ├── lib/          # API client
 │       └── styles/       # Global styles and design tokens
 │
 └── backend/              # Express.js backend
     └── src/
-        ├── controllers/  # Route handlers
-        ├── models/       # Mongoose models (User, Course, Cart, Order, Enrollment)
+        ├── controllers/  # Route handlers (user, course, cart, reviews, section)
+        ├── models/       # Mongoose models (User, Course, Cart, Order, Enrollment, Review, Section)
         ├── routes/       # API routes
         ├── services/     # Business logic (cart service, enrollment service)
         ├── middlewares/  # JWT verification
@@ -56,24 +56,27 @@ cd frontend
 npm install
 npm run dev
 ```
-Runs on http://localhost:3000
+Runs on http://localhost:3001
 
 ## Pages
 
 | Route | Description |
 |-------|-------------|
-| `/` | Homepage with course grid and auto-scrolling carousels |
-| `/login` | Login/Register with backend authentication |
+| `/` | Homepage with course grid, ratings from DB, and auto-scrolling carousels |
+| `/login` | Login/Register with password visibility toggle |
 | `/courses` | My Learning - enrolled courses |
 | `/cart` | Shopping cart with checkout |
-| `/course/[id]` | Course player with video and sidebar |
+| `/course/[id]` | Course player with video, sections sidebar, and review form |
 
 ## Features
 
-- **Homepage**: Coursera-style UI with hero banner, category cards, course grid, and animated auto-scrolling course carousels with navigation arrows
-- **Authentication**: User registration and login with JWT tokens, AuthContext for global state
+- **Homepage**: Coursera-style UI with hero banner, category cards, course grid with real ratings from database, and animated auto-scrolling course carousels
+- **Authentication**: User registration and login with JWT tokens, password visibility toggle on all password fields
+- **Change Password**: Modal to change password with field-specific error handling
 - **Shopping Cart**: Add/remove courses with real-time updates, checkout flow, CartContext for global state
 - **My Learning**: View enrolled courses after purchase
+- **Course Player**: Video player with sections sidebar fetched from backend
+- **Reviews & Ratings**: Submit reviews for enrolled courses, view existing reviews, ratings automatically update course averageRating and totalReviews
 - **Dark Mode**: Toggle between light and dark themes with iOS-style glassmorphism effects
 - **Responsive Design**: Works on desktop and mobile
 - **Course Images**: Dynamic course images from Unsplash
@@ -81,26 +84,43 @@ Runs on http://localhost:3000
 
 ## Recent Updates
 
-- Fixed cart remove functionality to properly return populated cart data
-- Fixed React hydration mismatch errors for theme toggling
-- Added glassmorphism effects for dark mode
-- Improved cart service to return consistent data with totalPrice
-- Unified ThemeContext state management across components
+- Added review system with star rating component
+- Course ratings and review counts now fetched from database (no dummy data)
+- Fixed ObjectId conversion for review aggregation to properly update course stats
+- Added recalculate-ratings endpoint to sync all course ratings from existing reviews
+- Password visibility toggle on all password fields (login, register, change password)
+- Change password modal accessible from header and navbar dropdown
+- Removed excessive borders/dividers for cleaner UI
+- Course sections fetched from backend API
 
 ## API Endpoints
 
 ### Authentication
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/users/register` | Register new user |
-| POST | `/api/v1/users/login` | Login user |
-| POST | `/api/v1/users/logout` | Logout user |
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/api/v1/users/register` | No | Register new user |
+| POST | `/api/v1/users/login` | No | Login user |
+| POST | `/api/v1/users/logout` | Yes | Logout user |
+| POST | `/api/v1/users/change-password` | Yes | Change user password |
 
 ### Courses
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| GET | `/api/v1/courses/all-courses` | No | Get all available courses |
+| GET | `/api/v1/courses/all-courses` | No | Get all available courses (includes averageRating, totalReviews) |
 | GET | `/api/v1/courses/my-courses` | Yes | Get user's enrolled courses |
+| POST | `/api/v1/courses/recalculate-ratings` | No | Recalculate all course ratings from reviews |
+
+### Reviews
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/api/v1/courses/my-courses/:courseId/review` | Yes | Submit a review for enrolled course |
+| GET | `/api/v1/courses/my-courses/:courseId/review` | Yes | Get user's review for a course |
+
+### Sections
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/v1/section/courses/:courseId/sections` | No | Get all sections for a course |
+| GET | `/api/v1/section/sections/:sectionId` | No | Get a specific section |
 
 ### Cart
 | Method | Endpoint | Auth | Description |
