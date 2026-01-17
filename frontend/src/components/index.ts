@@ -11,3 +11,6 @@ export { HeroBanner } from './HeroBanner';
 export { CourseRow } from './CourseRow';
 export { HomepageCourseCard } from './HomepageCourseCard';
 export { CategoryCards } from './CategoryCards';
+export { ChangePasswordModal } from './ChangePasswordModal';
+export { StarRating } from './StarRating';
+export { ReviewForm } from './ReviewForm';

@@ -30,6 +30,8 @@ export interface Course {
   subtitle?: string;
   description?: string;
   price: number;
+  averageRating?: number;
+  totalReviews?: number;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -58,6 +60,27 @@ export interface Order {
   totalAmount: number;
   status: string;
   createdAt: string;
+}
+
+// Section type from backend
+export interface Section {
+  _id: string;
+  courseId: string;
+  title: string;
+  order: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Review type
+export interface Review {
+  _id: string;
+  userId: string;
+  courseId: string;
+  rating: number;
+  comment?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Store tokens
@@ -478,6 +501,231 @@ export const api = {
         statusCode: 500,
         data: null,
         message: 'Failed to clear cart',
+        success: false,
+      };
+    }
+  },
+
+  // Change password endpoint
+  async changePassword(oldPassword: string, newPassword: string): Promise<ApiResponse<null>> {
+    const token = getAccessToken();
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/change-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+        body: JSON.stringify({ oldPassword, newPassword }),
+      });
+      
+      // Handle expired token
+      if (response.status === 401) {
+        clearAuthOnExpiry();
+        return {
+          statusCode: 401,
+          data: null,
+          message: 'Session expired. Please login again.',
+          success: false,
+        };
+      }
+      
+      if (!response.ok) {
+        const errorMessages: Record<number, string> = {
+          400: 'Invalid request. Please check your passwords.',
+        };
+        
+        // Try to get error message from response
+        try {
+          const errorData = await response.json();
+          return {
+            statusCode: response.status,
+            data: null,
+            message: errorData.message || errorMessages[response.status] || 'Failed to change password',
+            success: false,
+          };
+        } catch {
+          return {
+            statusCode: response.status,
+            data: null,
+            message: errorMessages[response.status] || 'Failed to change password',
+            success: false,
+          };
+        }
+      }
+      
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: null,
+        message: 'Failed to change password',
+        success: false,
+      };
+    }
+  },
+
+  // Section endpoints
+  async getCourseSections(courseId: string): Promise<ApiResponse<Section[]>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/section/courses/${courseId}/sections`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: [],
+          message: 'Failed to fetch course sections',
+          success: false,
+        };
+      }
+      
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: [],
+        message: 'Failed to fetch course sections',
+        success: false,
+      };
+    }
+  },
+
+  async getSectionById(sectionId: string): Promise<ApiResponse<Section>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/section/sections/${sectionId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: {} as Section,
+          message: 'Failed to fetch section',
+          success: false,
+        };
+      }
+      
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: {} as Section,
+        message: 'Failed to fetch section',
+        success: false,
+      };
+    }
+  },
+
+  // Review endpoints
+  async submitReview(courseId: string, rating: number, comment?: string): Promise<ApiResponse<Review>> {
+    const token = getAccessToken();
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/courses/my-courses/${courseId}/review`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+        body: JSON.stringify({ rating, comment }),
+      });
+      
+      // Handle expired token
+      if (response.status === 401) {
+        clearAuthOnExpiry();
+        return {
+          statusCode: 401,
+          data: {} as Review,
+          message: 'Session expired. Please login again.',
+          success: false,
+        };
+      }
+      
+      if (!response.ok) {
+        const errorMessages: Record<number, string> = {
+          400: 'Invalid rating. Please select 1-5 stars.',
+          403: 'You must be enrolled to review this course.',
+          409: 'You have already reviewed this course.',
+        };
+        
+        // Try to get error message from response
+        try {
+          const errorData = await response.json();
+          return {
+            statusCode: response.status,
+            data: {} as Review,
+            message: errorData.message || errorMessages[response.status] || 'Failed to submit review',
+            success: false,
+          };
+        } catch {
+          return {
+            statusCode: response.status,
+            data: {} as Review,
+            message: errorMessages[response.status] || 'Failed to submit review',
+            success: false,
+          };
+        }
+      }
+      
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: {} as Review,
+        message: 'Failed to submit review',
+        success: false,
+      };
+    }
+  },
+
+  async getUserReview(courseId: string): Promise<ApiResponse<Review | null>> {
+    const token = getAccessToken();
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/courses/my-courses/${courseId}/review`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+      
+      if (response.status === 401) {
+        return {
+          statusCode: 401,
+          data: null,
+          message: 'Session expired',
+          success: false,
+        };
+      }
+      
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: null,
+          message: 'Failed to fetch review',
+          success: false,
+        };
+      }
+      
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: null,
+        message: 'Failed to fetch review',
         success: false,
       };
     }

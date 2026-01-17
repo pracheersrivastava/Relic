@@ -40,6 +40,26 @@
   gap: var(--spacing-md);
 }
 
+.settingsButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.settingsButton:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: var(--color-primary-light, rgba(0, 86, 210, 0.08));
+}
+
 .logoutButton {
   font-size: var(--font-size-label);
   font-weight: var(--font-weight-semibold);

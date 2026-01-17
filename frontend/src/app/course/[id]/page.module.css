@@ -123,3 +123,24 @@
     position: static;
   }
 }
+
+.noSections {
+  padding: var(--spacing-lg);
+  background-color: var(--color-card-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--button-radius);
+  text-align: center;
+}
+
+.noSections h3 {
+  font-size: var(--font-size-section-header);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.noSections p {
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  margin: 0;
+}

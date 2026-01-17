@@ -269,6 +269,8 @@
 .dropdownDivider {
   height: 1px;
   background-color: var(--color-border);
+  margin: var(--spacing-xs) var(--spacing-md);
+  opacity: 0.5;
 }
 
 .dropdownItem {

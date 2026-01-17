@@ -11,7 +11,14 @@
   color: var(--color-text-primary);
 }
 
+.inputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .input {
+  width: 100%;
   height: var(--input-height);
   padding: 0 var(--spacing-md);
   font-size: var(--font-size-body);
@@ -21,6 +28,10 @@
   border: 2px solid var(--color-border);
   border-radius: 8px;
   transition: all var(--transition-normal);
+}
+
+.inputWithToggle {
+  padding-right: 48px;
 }
 
 .input::placeholder {
@@ -42,6 +53,28 @@
   color: var(--color-disabled);
   cursor: not-allowed;
   border-color: var(--color-border-light, var(--color-border));
+}
+
+/* Eye toggle button */
+.eyeButton {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  color: var(--color-text-secondary);
+  transition: all 0.2s;
+}
+
+.eyeButton:hover {
+  color: var(--color-text-primary);
+  background: var(--color-card-background);
 }
 
 /* Error state */

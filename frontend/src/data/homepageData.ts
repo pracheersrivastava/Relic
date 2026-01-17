@@ -1,4 +1,4 @@
-// Dummy data for homepage - NO BACKEND, NO API
+// Reusable types for homepage components
 
 export interface HomepageCourse {
   id: string;
@@ -22,6 +22,7 @@ export interface Banner {
   textColor: string;
 }
 
+// Banner data for hero section
 export const banners: Banner[] = [
   {
     id: 'banner-1',
@@ -52,6 +53,7 @@ export const banners: Banner[] = [
   },
 ];
 
+// Partner logos for display
 export const partners = [
   { name: 'Google', logo: 'G' },
   { name: 'IBM', logo: 'IBM' },
@@ -65,98 +67,7 @@ export const partners = [
   { name: 'Meta', logo: 'M' },
 ];
 
-export const trendingCourses: HomepageCourse[] = [
-  {
-    id: 'trend-1',
-    title: 'Google Data Analytics',
-    provider: 'Google',
-    providerLogo: 'G',
-    image: '/placeholder-course.jpg',
-    rating: 4.8,
-    reviewCount: '125K',
-    type: 'Professional Certificate',
-  },
-  {
-    id: 'trend-2',
-    title: 'IBM Data Science',
-    provider: 'IBM',
-    providerLogo: 'IBM',
-    image: '/placeholder-course.jpg',
-    rating: 4.6,
-    reviewCount: '89K',
-    type: 'Professional Certificate',
-  },
-];
-
-export const popularCourses: HomepageCourse[] = [
-  {
-    id: 'pop-1',
-    title: 'Microsoft Power BI Data Analyst',
-    provider: 'Microsoft',
-    providerLogo: '⊞',
-    image: '/placeholder-course.jpg',
-    rating: 4.6,
-    reviewCount: '34K',
-    type: 'Professional Certificate',
-  },
-  {
-    id: 'pop-2',
-    title: 'IBM Generative AI Engineering',
-    provider: 'IBM',
-    providerLogo: 'IBM',
-    image: '/placeholder-course.jpg',
-    rating: 4.6,
-    reviewCount: '12K',
-    type: 'Professional Certificate',
-  },
-];
-
-export const newCourses: HomepageCourse[] = [
-  {
-    id: 'new-1',
-    title: 'Generative AI for Everyone',
-    provider: 'DeepLearning.AI',
-    providerLogo: 'DL',
-    image: '/placeholder-course.jpg',
-    rating: 4.9,
-    reviewCount: '8K',
-    type: 'Course',
-  },
-  {
-    id: 'new-2',
-    title: 'Google AI Essentials',
-    provider: 'Google',
-    providerLogo: 'G',
-    image: '/placeholder-course.jpg',
-    rating: 4.8,
-    reviewCount: '5K',
-    type: 'Course',
-  },
-];
-
-export const aiSkillsCourses: HomepageCourse[] = [
-  {
-    id: 'ai-1',
-    title: 'AI For Everyone',
-    provider: 'DeepLearning.AI',
-    providerLogo: 'DL',
-    image: '/placeholder-course.jpg',
-    rating: 4.8,
-    reviewCount: '210K',
-    type: 'Course',
-  },
-  {
-    id: 'ai-2',
-    title: 'ChatGPT Advanced Data Analysis',
-    provider: 'Vanderbilt University',
-    providerLogo: 'V',
-    image: '/placeholder-course.jpg',
-    rating: 4.7,
-    reviewCount: '18K',
-    type: 'Course',
-  },
-];
-
+// Category cards for homepage
 export const categories = [
   { id: 'cat-1', name: 'Launch a new career', icon: '📈' },
   { id: 'cat-2', name: 'Gain in-demand skills', icon: '🎯' },

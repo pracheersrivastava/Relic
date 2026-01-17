@@ -4,10 +4,6 @@ import React, { useEffect, useState } from 'react';
 import styles from './page.module.css';
 import { Navbar, HeroBanner, CourseRow, CategoryCards } from '@/components';
 import { 
-  trendingCourses, 
-  popularCourses, 
-  newCourses, 
-  aiSkillsCourses,
   partners,
   HomepageCourse 
 } from '@/data/homepageData';
@@ -29,21 +25,25 @@ const courseImages = [
   'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=200&fit=crop',
 ];
 
-// Static ratings for courses (seeded by index for consistency)
-const courseRatings = [4.8, 4.7, 4.9, 4.6, 4.5, 4.8, 4.7, 4.6, 4.9];
-const reviewCounts = ['125K', '89K', '156K', '98K', '45K', '67K', '234K', '178K', '112K'];
+// Format review count for display
+const formatReviewCount = (count: number): string => {
+  if (count >= 1000) {
+    return `${(count / 1000).toFixed(count >= 10000 ? 0 : 1)}K`;
+  }
+  return count.toString();
+};
 
-// Convert backend course to homepage format with $1 price
+// Convert backend course to homepage format
 const convertToHomepageCourse = (course: Course, index: number): HomepageCourse => ({
   id: course._id,
   title: course.title,
   provider: 'Coursera',
   providerLogo: 'C',
   image: courseImages[index % courseImages.length],
-  rating: courseRatings[index % courseRatings.length],
-  reviewCount: reviewCounts[index % reviewCounts.length],
+  rating: course.averageRating || 0,
+  reviewCount: formatReviewCount(course.totalReviews || 0),
   type: 'Course',
-  price: 1, // All courses from DB are $1
+  price: course.price || 1,
 });
 
 export default function HomePage() {
@@ -183,33 +183,35 @@ export default function HomePage() {
         )}
 
         {/* Course Sections with Auto-Scroll */}
-        <section className={styles.courseSections}>
-          <h2 className={styles.sectionMainTitle}>Trending courses</h2>
-          
-          <CourseRow 
-            title="Most popular →" 
-            courses={backendCourses.length > 0 ? backendCourses : trendingCourses} 
-            direction="left"
-          />
-          
-          <CourseRow 
-            title="Weekly spotlight →" 
-            courses={backendCourses.length > 0 ? backendCourses : popularCourses} 
-            direction="right"
-          />
-          
-          <CourseRow 
-            title="In-demand AI skills →" 
-            courses={backendCourses.length > 0 ? backendCourses : aiSkillsCourses} 
-            direction="left"
-          />
-          
-          <CourseRow 
-            title="New courses →" 
-            courses={backendCourses.length > 0 ? backendCourses : newCourses} 
-            direction="right"
-          />
-        </section>
+        {backendCourses.length > 0 && (
+          <section className={styles.courseSections}>
+            <h2 className={styles.sectionMainTitle}>Trending courses</h2>
+            
+            <CourseRow 
+              title="Most popular →" 
+              courses={backendCourses} 
+              direction="left"
+            />
+            
+            <CourseRow 
+              title="Weekly spotlight →" 
+              courses={backendCourses} 
+              direction="right"
+            />
+            
+            <CourseRow 
+              title="In-demand AI skills →" 
+              courses={backendCourses} 
+              direction="left"
+            />
+            
+            <CourseRow 
+              title="New courses →" 
+              courses={backendCourses} 
+              direction="right"
+            />
+          </section>
+        )}
       </main>
 
       {/* Toast Notification */}
