@@ -1,41 +1,59 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap');
 
-/* Design System Tokens */
+/* Design System Tokens - Coursera Inspired Premium */
 :root {
-  /* Light Mode Colors */
+  /* Primary Colors - Coursera Blue */
   --color-primary: #0056D2;
-  --color-primary-hover: #0041A8;
-  --color-success: #059669;
-  --color-warning: #f59e0b;
-  --color-error: #dc2626;
+  --color-primary-hover: #003E9C;
+  --color-primary-light: #E8F1FC;
+  --color-primary-dark: #002B6B;
+  
+  /* Accent Colors */
+  --color-accent: #00A86B;
+  --color-accent-light: #E6F7F1;
+  
+  /* Status Colors */
+  --color-success: #00875A;
+  --color-warning: #FF9500;
+  --color-error: #DE350B;
+  
+  /* Neutral Colors - Light Mode */
   --color-text-primary: #1F1F1F;
-  --color-text-secondary: #5F6368;
+  --color-text-secondary: #636363;
+  --color-text-muted: #8C8C8C;
   --color-background: #FFFFFF;
-  --color-card-background: #F8F9FA;
-  --color-border: #E0E0E0;
+  --color-background-secondary: #F5F7FA;
+  --color-card-background: #FFFFFF;
+  --color-border: #E5E5E5;
+  --color-border-light: #F0F0F0;
   --color-disabled: #BDBDBD;
 
+  /* Premium Accent */
+  --color-gold: #C4A962;
+  --color-gold-light: #FDF8E8;
+
   /* Typography */
-  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-family: 'Source Sans Pro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-display: 'Playfair Display', Georgia, serif;
   
   /* Font Sizes */
-  --font-size-page-title: 28px;
-  --font-size-subtitle: 22px;
-  --font-size-section-header: 18px;
+  --font-size-page-title: 32px;
+  --font-size-subtitle: 24px;
+  --font-size-section-header: 20px;
   --font-size-body: 16px;
   --font-size-label: 14px;
   --font-size-small: 13px;
-  --font-size-button: 16px;
+  --font-size-button: 15px;
 
   /* Font Weights */
   --font-weight-regular: 400;
-  --font-weight-medium: 500;
+  --font-weight-medium: 600;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
   /* Line Heights */
-  --line-height-page-title: 36px;
-  --line-height-section-header: 26px;
+  --line-height-page-title: 40px;
+  --line-height-section-header: 28px;
   --line-height-body: 24px;
   --line-height-label: 20px;
   --line-height-button: 24px;
@@ -54,50 +72,68 @@
   --sidebar-width: 320px;
 
   /* Component Tokens */
-  --button-height: 44px;
+  --button-height: 48px;
   --button-padding-y: 12px;
-  --button-padding-x: 16px;
-  --button-radius: 8px;
-  --input-height: 44px;
-  --input-radius: 8px;
-  --card-padding: 16px;
-  --card-gap: 12px;
-  --card-radius: 12px;
+  --button-padding-x: 24px;
+  --button-radius: 4px;
+  --input-height: 48px;
+  --input-radius: 4px;
+  --card-padding: 20px;
+  --card-gap: 16px;
+  --card-radius: 8px;
   --progress-height: 6px;
   --progress-radius: 3px;
   --tap-target: 48px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.15);
+  /* Premium Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 12px 32px rgba(0, 86, 210, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
 
   /* Transitions */
   --transition-fast: 0.15s ease;
-  --transition-normal: 0.2s ease;
-  --transition-slow: 0.3s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.35s ease;
+  --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* Dark Mode Colors */
 [data-theme="dark"] {
-  --color-primary: #4C8DFF;
-  --color-primary-hover: #6BA3FF;
-  --color-success: #34D399;
-  --color-warning: #FBBF24;
-  --color-error: #F87171;
-  --color-text-primary: #F3F4F6;
-  --color-text-secondary: #9CA3AF;
-  --color-background: #0F0F0F;
+  --color-primary: #2D8CFF;
+  --color-primary-hover: #5AA3FF;
+  --color-primary-light: #1A2D47;
+  --color-primary-dark: #1565C0;
+  
+  --color-accent: #00D68F;
+  --color-accent-light: #0D3D2E;
+  
+  --color-success: #00D68F;
+  --color-warning: #FFB547;
+  --color-error: #FF6B6B;
+  
+  --color-text-primary: #F5F5F5;
+  --color-text-secondary: #A8A8A8;
+  --color-text-muted: #6B6B6B;
+  --color-background: #0D0D0D;
+  --color-background-secondary: #161616;
   --color-card-background: #1A1A1A;
-  --color-border: #2D2D2D;
-  --color-disabled: #4B5563;
+  --color-border: #2A2A2A;
+  --color-border-light: #222222;
+  --color-disabled: #4A4A4A;
+
+  --color-gold: #D4B96C;
+  --color-gold-light: #2A2517;
 
   /* Dark mode shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.7);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 1px rgba(255, 255, 255, 0.05);
+  --shadow-card-hover: 0 12px 32px rgba(45, 140, 255, 0.2), 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Reset and Base Styles */

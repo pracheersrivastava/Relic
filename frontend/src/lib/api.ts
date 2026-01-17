@@ -80,6 +80,26 @@ export const getAccessToken = (): string | null => {
   return null;
 };
 
+// Clear all auth data when token expires
+const clearAuthOnExpiry = () => {
+  accessToken = null;
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('user');
+    // Trigger a page reload to reset auth state
+    window.location.href = '/login';
+  }
+};
+
+// Handle response and check for auth errors
+const handleAuthError = (response: Response): boolean => {
+  if (response.status === 401) {
+    clearAuthOnExpiry();
+    return true;
+  }
+  return false;
+};
+
 export const api = {
   // Auth endpoints
   async login(email: string, password: string): Promise<ApiResponse<LoginResponse>> {
@@ -269,6 +289,16 @@ export const api = {
         credentials: 'include',
       });
       
+      // Handle expired token - don't redirect, just return empty
+      if (response.status === 401) {
+        return {
+          statusCode: response.status,
+          data: { items: [], totalPrice: 0 } as Cart,
+          message: 'Session expired',
+          success: false,
+        };
+      }
+      
       if (!response.ok) {
         return {
           statusCode: response.status,
@@ -303,10 +333,20 @@ export const api = {
         body: JSON.stringify({ courseId }),
       });
       
+      // Handle expired token
+      if (response.status === 401) {
+        clearAuthOnExpiry();
+        return {
+          statusCode: 401,
+          data: {} as Cart,
+          message: 'Session expired. Please login again.',
+          success: false,
+        };
+      }
+      
       if (!response.ok) {
         const errorMessages: Record<number, string> = {
           400: 'Course already in cart',
-          401: 'Please login to add to cart',
           404: 'Course not found',
         };
         
@@ -375,10 +415,20 @@ export const api = {
         credentials: 'include',
       });
       
+      // Handle expired token
+      if (response.status === 401) {
+        clearAuthOnExpiry();
+        return {
+          statusCode: 401,
+          data: {} as Order,
+          message: 'Session expired. Please login again.',
+          success: false,
+        };
+      }
+      
       if (!response.ok) {
         const errorMessages: Record<number, string> = {
           400: 'Cart is empty',
-          401: 'Please login to checkout',
         };
         
         return {

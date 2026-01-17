@@ -7,7 +7,7 @@
 
 .main {
   flex: 1;
-  padding: var(--spacing-xl) var(--spacing-lg);
+  padding: var(--spacing-2xl) var(--spacing-lg);
 }
 
 .container {
@@ -21,23 +21,29 @@
   align-items: baseline;
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border-light, var(--color-border));
 }
 
 .title {
   font-size: var(--font-size-page-title);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
 }
 
 .itemCount {
   font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted, var(--color-text-secondary));
+  padding: 6px 14px;
+  background: var(--color-primary-light, rgba(0, 86, 210, 0.08));
+  border-radius: 20px;
+  font-weight: var(--font-weight-semibold);
 }
 
 /* Content Layout */
 .content {
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: 1fr 400px;
   gap: var(--spacing-xl);
   align-items: start;
 }
@@ -51,41 +57,54 @@
 
 .cartItem {
   display: grid;
-  grid-template-columns: 120px 1fr auto auto;
+  grid-template-columns: 140px 1fr auto auto;
   gap: var(--spacing-lg);
   align-items: center;
   padding: var(--spacing-lg);
   background-color: var(--color-card-background);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  transition: box-shadow 0.2s;
+  border: 1px solid var(--color-border-light, var(--color-border));
+  border-radius: 16px;
+  transition: all var(--transition-normal);
 }
 
 .cartItem:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-primary);
 }
 
 .courseImage {
-  width: 120px;
-  height: 80px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 8px;
+  width: 140px;
+  height: 90px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #002B6B 100%);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.courseImage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
 .courseBadge {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   background-color: white;
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  font-weight: 700;
-  color: #667eea;
+  font-size: 14px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
 }
 
 .courseInfo {
@@ -98,29 +117,42 @@
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
-  line-height: 1.4;
+  line-height: 1.45;
+  transition: color var(--transition-fast);
+}
+
+.cartItem:hover .courseTitle {
+  color: var(--color-primary);
 }
 
 .courseSubtitle {
   font-size: var(--font-size-small);
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted, var(--color-text-secondary));
 }
 
 .courseMeta {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  padding-top: var(--spacing-xs);
 }
 
 .rating {
   font-size: var(--font-size-small);
-  font-weight: var(--font-weight-semibold);
-  color: #f59e0b;
+  font-weight: var(--font-weight-bold);
+  color: #FF9500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rating::before {
+  content: '★';
 }
 
 .students {
   font-size: var(--font-size-small);
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted, var(--color-text-secondary));
 }
 
 .courseActions {
@@ -135,13 +167,14 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--button-radius);
-  transition: background-color 0.2s;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 8px;
+  transition: all var(--transition-normal);
+  font-weight: var(--font-weight-semibold);
 }
 
 .removeButton:hover {
-  background-color: rgba(0, 86, 210, 0.08);
+  background-color: var(--color-primary-light, rgba(0, 86, 210, 0.08));
 }
 
 .coursePrice {
@@ -150,7 +183,7 @@
 
 .price {
   font-size: var(--font-size-subtitle);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
 }
 
@@ -159,20 +192,25 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+  position: sticky;
+  top: var(--spacing-lg);
 }
 
 .summaryCard {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-xl);
   background-color: var(--color-card-background);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border: 1px solid var(--color-border-light, var(--color-border));
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
 }
 
 .summaryTitle {
   font-size: var(--font-size-subtitle);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border-light, var(--color-border));
 }
 
 .summaryRow {
@@ -185,46 +223,51 @@
 }
 
 .discount {
-  color: #059669;
+  color: var(--color-success, #00875A);
+  font-weight: var(--font-weight-semibold);
 }
 
 .summaryDivider {
   height: 1px;
-  background-color: var(--color-border);
-  margin: var(--spacing-md) 0;
+  background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+  margin: var(--spacing-lg) 0;
 }
 
 .totalRow {
   font-size: var(--font-size-subtitle);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
 }
 
 .totalPrice {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 28px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
 }
 
 .checkoutButton {
   width: 100%;
-  padding: var(--spacing-md);
-  background-color: var(--color-primary);
+  padding: 16px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #003E9C 100%);
   color: white;
   font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all var(--transition-normal);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
+  box-shadow: 0 4px 16px rgba(0, 86, 210, 0.3);
 }
 
 .checkoutButton:hover:not(:disabled) {
-  background-color: #0045a8;
+  background: linear-gradient(135deg, #003E9C 0%, #002B6B 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 86, 210, 0.4);
 }
 
 .checkoutButton:disabled {
@@ -235,46 +278,49 @@
 .clearButton {
   width: 100%;
   padding: var(--spacing-sm) var(--spacing-md);
-  margin-top: var(--spacing-sm);
+  margin-top: var(--spacing-md);
   background: none;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted, var(--color-text-secondary));
   font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
   border: none;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color var(--transition-fast);
 }
 
 .clearButton:hover {
-  color: #dc2626;
+  color: var(--color-error, #DE350B);
 }
 
 .guarantee {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-xs);
-  margin-top: var(--spacing-md);
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border-light, var(--color-border));
   font-size: var(--font-size-small);
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted, var(--color-text-secondary));
 }
 
 .guarantee svg {
-  color: #059669;
+  color: var(--color-success, #00875A);
 }
 
 /* Promo Card */
 .promoCard {
-  padding: var(--spacing-md);
+  padding: var(--spacing-lg);
   background-color: var(--color-card-background);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border: 1px solid var(--color-border-light, var(--color-border));
+  border-radius: 16px;
 }
 
 .promoCard h4 {
   font-size: var(--font-size-label);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
 }
 
 .promoInput {
@@ -284,29 +330,31 @@
 
 .promoInput input {
   flex: 1;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-md);
   font-size: var(--font-size-label);
-  border: 1px solid var(--color-border);
-  border-radius: var(--button-radius);
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
   background-color: var(--color-background);
   color: var(--color-text-primary);
+  transition: all var(--transition-normal);
 }
 
 .promoInput input:focus {
   outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px var(--color-primary-light, rgba(0, 86, 210, 0.1));
 }
 
 .promoInput button {
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
   font-size: var(--font-size-label);
   font-weight: var(--font-weight-semibold);
   color: var(--color-primary);
   background: none;
-  border: 1px solid var(--color-primary);
-  border-radius: var(--button-radius);
+  border: 2px solid var(--color-primary);
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-normal);
 }
 
 .promoInput button:hover {
@@ -323,11 +371,24 @@
   font-size: var(--font-size-body);
   color: var(--color-primary);
   text-decoration: none;
-  transition: opacity 0.2s;
+  font-weight: var(--font-weight-semibold);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-normal);
+}
+
+.continueLink::before {
+  content: '←';
+  transition: transform var(--transition-normal);
 }
 
 .continueLink:hover {
-  opacity: 0.8;
+  text-decoration: none;
+}
+
+.continueLink:hover::before {
+  transform: translateX(-4px);
 }
 
 /* Empty State */
@@ -338,39 +399,47 @@
   justify-content: center;
   min-height: 400px;
   text-align: center;
+  padding: var(--spacing-2xl);
+  background: var(--color-background-secondary, var(--color-card-background));
+  border-radius: 20px;
+  border: 2px dashed var(--color-border);
 }
 
 .emptyIcon {
-  font-size: 64px;
-  margin-bottom: var(--spacing-lg);
+  font-size: 72px;
+  margin-bottom: var(--spacing-xl);
 }
 
 .emptyState h2 {
   font-size: var(--font-size-subtitle);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-sm);
 }
 
 .emptyState p {
   font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-lg);
+  color: var(--color-text-muted, var(--color-text-secondary));
+  margin-bottom: var(--spacing-xl);
+  max-width: 350px;
 }
 
 .primaryButton {
-  padding: var(--spacing-md) var(--spacing-xl);
-  background-color: var(--color-primary);
+  padding: var(--spacing-md) var(--spacing-2xl);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #003E9C 100%);
   color: white;
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-semibold);
-  border-radius: 8px;
+  border-radius: 10px;
   text-decoration: none;
-  transition: background-color 0.2s;
+  transition: all var(--transition-normal);
+  box-shadow: 0 4px 16px rgba(0, 86, 210, 0.3);
 }
 
 .primaryButton:hover {
-  background-color: #0045a8;
+  background: linear-gradient(135deg, #003E9C 0%, #002B6B 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 86, 210, 0.4);
 }
 
 /* Loading State */
@@ -380,26 +449,26 @@
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
   color: var(--color-text-secondary);
 }
 
 .spinner {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border: 3px solid var(--color-border);
   border-top-color: var(--color-primary);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 
 .buttonSpinner {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: white;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
@@ -414,34 +483,56 @@
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-xl);
   border-radius: 12px;
   font-size: var(--font-size-label);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   z-index: 1000;
-  animation: slideUp 0.3s ease-out;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .toast.success {
-  background-color: #059669;
+  background: linear-gradient(135deg, var(--color-success, #00875A) 0%, #005C3D 100%);
   color: white;
+  box-shadow: 0 8px 32px rgba(0, 135, 90, 0.3);
 }
 
 .toast.error {
-  background-color: #dc2626;
+  background: linear-gradient(135deg, var(--color-error, #DE350B) 0%, #A82608 100%);
   color: white;
+  box-shadow: 0 8px 32px rgba(222, 53, 11, 0.3);
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(20px);
+    transform: translateX(-50%) translateY(30px) scale(0.9);
   }
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(0) scale(1);
   }
+}
+
+/* Dark mode */
+[data-theme="dark"] .cartItem:hover {
+  box-shadow: 0 16px 40px rgba(45, 140, 255, 0.2), 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .checkoutButton {
+  box-shadow: 0 4px 16px rgba(45, 140, 255, 0.3);
+}
+
+[data-theme="dark"] .checkoutButton:hover:not(:disabled) {
+  box-shadow: 0 8px 24px rgba(45, 140, 255, 0.4);
+}
+
+[data-theme="dark"] .primaryButton {
+  box-shadow: 0 4px 16px rgba(45, 140, 255, 0.3);
+}
+
+[data-theme="dark"] .primaryButton:hover {
+  box-shadow: 0 8px 24px rgba(45, 140, 255, 0.4);
 }
 
 /* Responsive */
@@ -452,10 +543,11 @@
 
   .summary {
     order: -1;
+    position: static;
   }
 
   .cartItem {
-    grid-template-columns: 100px 1fr;
+    grid-template-columns: 120px 1fr;
     grid-template-rows: auto auto;
   }
 
@@ -471,6 +563,10 @@
 }
 
 @media (max-width: 600px) {
+  .main {
+    padding: var(--spacing-xl) var(--spacing-md);
+  }
+  
   .cartItem {
     grid-template-columns: 1fr;
     text-align: center;
@@ -478,7 +574,7 @@
 
   .courseImage {
     width: 100%;
-    height: 120px;
+    height: 130px;
   }
 
   .courseActions {

@@ -49,7 +49,7 @@ const convertToHomepageCourse = (course: Course, index: number): HomepageCourse 
 export default function HomePage() {
   const [backendCourses, setBackendCourses] = useState<HomepageCourse[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(true);
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { addToCart } = useCart();
   const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({ 
     show: false, 
@@ -81,7 +81,9 @@ export default function HomePage() {
   };
 
   const handleAddToCart = async (courseId: string) => {
-    if (!isAuthenticated) {
+    // Check user directly instead of isAuthenticated to avoid stale closure
+    const token = localStorage.getItem('accessToken');
+    if (!token && !user) {
       showToast('Please login to add courses to cart', 'error');
       return;
     }
