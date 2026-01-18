@@ -83,6 +83,18 @@ export interface Review {
   updatedAt?: string;
 }
 
+// Lesson type from backend
+export interface Lesson {
+  _id: string;
+  sectionId: string;
+  title: string;
+  videoUrl: string;
+  duration: number;  // in seconds
+  order: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 // Store tokens
 let accessToken: string | null = null;
 
@@ -134,7 +146,7 @@ export const api = {
       credentials: 'include',
       body: JSON.stringify({ email, password }),
     });
-    
+
     // Handle error responses - backend may return HTML or JSON
     if (!response.ok) {
       // Map status codes to user-friendly messages
@@ -144,7 +156,7 @@ export const api = {
         410: 'Invalid password',
         500: 'Server error. Please try again later.',
       };
-      
+
       return {
         statusCode: response.status,
         data: {} as LoginResponse,
@@ -152,13 +164,13 @@ export const api = {
         success: false,
       };
     }
-    
+
     const data = await response.json();
-    
+
     if (data.success && data.data?.accessToken) {
       setAccessToken(data.data.accessToken);
     }
-    
+
     return data;
   },
 
@@ -170,7 +182,7 @@ export const api = {
       },
       body: JSON.stringify({ fullname, email, password }),
     });
-    
+
     // Handle error responses - backend may return HTML or JSON
     if (!response.ok) {
       // Map status codes to user-friendly messages
@@ -179,7 +191,7 @@ export const api = {
         409: 'Email already exists',
         500: 'Server error. Please try again later.',
       };
-      
+
       return {
         statusCode: response.status,
         data: {} as RegisterResponse,
@@ -187,14 +199,14 @@ export const api = {
         success: false,
       };
     }
-    
+
     const data = await response.json();
     return data;
   },
 
   async logout(): Promise<ApiResponse<null>> {
     const token = getAccessToken();
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/users/logout`, {
         method: 'POST',
@@ -204,10 +216,10 @@ export const api = {
         },
         credentials: 'include',
       });
-      
+
       // Clear local storage regardless of response
       setAccessToken(null);
-      
+
       if (!response.ok) {
         return {
           statusCode: response.status,
@@ -216,7 +228,7 @@ export const api = {
           success: false,
         };
       }
-      
+
       return await response.json();
     } catch (error) {
       // Clear local storage even if request fails
@@ -244,7 +256,7 @@ export const api = {
           'Content-Type': 'application/json',
         },
       });
-      
+
       if (!response.ok) {
         return {
           statusCode: response.status,
@@ -253,7 +265,7 @@ export const api = {
           success: false,
         };
       }
-      
+
       return await response.json();
     } catch (error) {
       return {
@@ -267,7 +279,7 @@ export const api = {
 
   async getEnrolledCourses(): Promise<ApiResponse<Course[]>> {
     const token = getAccessToken();
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/courses/my-courses`, {
         method: 'GET',
@@ -277,7 +289,7 @@ export const api = {
         },
         credentials: 'include',
       });
-      
+
       if (!response.ok) {
         return {
           statusCode: response.status,
@@ -286,7 +298,7 @@ export const api = {
           success: false,
         };
       }
-      
+
       return await response.json();
     } catch (error) {
       return {
@@ -301,7 +313,7 @@ export const api = {
   // Cart endpoints
   async getCart(): Promise<ApiResponse<Cart>> {
     const token = getAccessToken();
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/cart`, {
         method: 'GET',
@@ -311,7 +323,7 @@ export const api = {
         },
         credentials: 'include',
       });
-      
+
       // Handle expired token - don't redirect, just return empty
       if (response.status === 401) {
         return {
@@ -321,7 +333,7 @@ export const api = {
           success: false,
         };
       }
-      
+
       if (!response.ok) {
         return {
           statusCode: response.status,
@@ -330,7 +342,7 @@ export const api = {
           success: false,
         };
       }
-      
+
       return await response.json();
     } catch (error) {
       return {
@@ -344,7 +356,7 @@ export const api = {
 
   async addToCart(courseId: string): Promise<ApiResponse<Cart>> {
     const token = getAccessToken();
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/cart/add`, {
         method: 'POST',
@@ -355,7 +367,7 @@ export const api = {
         credentials: 'include',
         body: JSON.stringify({ courseId }),
       });
-      
+
       // Handle expired token
       if (response.status === 401) {
         clearAuthOnExpiry();
@@ -366,13 +378,13 @@ export const api = {
           success: false,
         };
       }
-      
+
       if (!response.ok) {
         const errorMessages: Record<number, string> = {
           400: 'Course already in cart',
           404: 'Course not found',
         };
-        
+
         return {
           statusCode: response.status,
           data: {} as Cart,
@@ -380,7 +392,7 @@ export const api = {
           success: false,
         };
       }
-      
+
       return await response.json();
     } catch (error) {
       return {
@@ -394,7 +406,7 @@ export const api = {
 
   async removeFromCart(courseId: string): Promise<ApiResponse<Cart>> {
     const token = getAccessToken();
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/cart/remove/${courseId}`, {
         method: 'DELETE',
@@ -404,7 +416,7 @@ export const api = {
         },
         credentials: 'include',
       });
-      
+
       if (!response.ok) {
         return {
           statusCode: response.status,
@@ -413,7 +425,7 @@ export const api = {
           success: false,
         };
       }
-      
+
       return await response.json();
     } catch (error) {
       return {
@@ -427,7 +439,7 @@ export const api = {
 
   async checkout(): Promise<ApiResponse<Order>> {
     const token = getAccessToken();
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/cart/pay`, {
         method: 'POST',
@@ -437,7 +449,7 @@ export const api = {
         },
         credentials: 'include',
       });
-      
+
       // Handle expired token
       if (response.status === 401) {
         clearAuthOnExpiry();
@@ -448,12 +460,12 @@ export const api = {
           success: false,
         };
       }
-      
+
       if (!response.ok) {
         const errorMessages: Record<number, string> = {
           400: 'Cart is empty',
         };
-        
+
         return {
           statusCode: response.status,
           data: {} as Order,
@@ -461,7 +473,7 @@ export const api = {
           success: false,
         };
       }
-      
+
       return await response.json();
     } catch (error) {
       return {
@@ -475,7 +487,7 @@ export const api = {
 
   async clearCart(): Promise<ApiResponse<null>> {
     const token = getAccessToken();
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/cart/clear`, {
         method: 'DELETE',
@@ -485,7 +497,7 @@ export const api = {
         },
         credentials: 'include',
       });
-      
+
       if (!response.ok) {
         return {
           statusCode: response.status,
@@ -494,7 +506,7 @@ export const api = {
           success: false,
         };
       }
-      
+
       return await response.json();
     } catch (error) {
       return {
@@ -509,7 +521,7 @@ export const api = {
   // Change password endpoint
   async changePassword(oldPassword: string, newPassword: string): Promise<ApiResponse<null>> {
     const token = getAccessToken();
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/users/change-password`, {
         method: 'POST',
@@ -520,7 +532,7 @@ export const api = {
         credentials: 'include',
         body: JSON.stringify({ oldPassword, newPassword }),
       });
-      
+
       // Handle expired token
       if (response.status === 401) {
         clearAuthOnExpiry();
@@ -531,12 +543,12 @@ export const api = {
           success: false,
         };
       }
-      
+
       if (!response.ok) {
         const errorMessages: Record<number, string> = {
           400: 'Invalid request. Please check your passwords.',
         };
-        
+
         // Try to get error message from response
         try {
           const errorData = await response.json();
@@ -555,7 +567,7 @@ export const api = {
           };
         }
       }
-      
+
       return await response.json();
     } catch (error) {
       return {
@@ -576,7 +588,7 @@ export const api = {
           'Content-Type': 'application/json',
         },
       });
-      
+
       if (!response.ok) {
         return {
           statusCode: response.status,
@@ -585,7 +597,7 @@ export const api = {
           success: false,
         };
       }
-      
+
       return await response.json();
     } catch (error) {
       return {
@@ -605,7 +617,7 @@ export const api = {
           'Content-Type': 'application/json',
         },
       });
-      
+
       if (!response.ok) {
         return {
           statusCode: response.status,
@@ -614,7 +626,7 @@ export const api = {
           success: false,
         };
       }
-      
+
       return await response.json();
     } catch (error) {
       return {
@@ -626,10 +638,220 @@ export const api = {
     }
   },
 
+  // Lesson endpoints
+  async getSectionLessons(sectionId: string): Promise<ApiResponse<Lesson[]>> {
+    const token = getAccessToken();
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/lessons/sections/${sectionId}/lessons`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: [],
+          message: 'Failed to fetch lessons',
+          success: false,
+        };
+      }
+
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: [],
+        message: 'Failed to fetch lessons',
+        success: false,
+      };
+    }
+  },
+
+  async getLessonById(lessonId: string): Promise<ApiResponse<Lesson>> {
+    const token = getAccessToken();
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/lessons/${lessonId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: {} as Lesson,
+          message: 'Failed to fetch lesson',
+          success: false,
+        };
+      }
+
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: {} as Lesson,
+        message: 'Failed to fetch lesson',
+        success: false,
+      };
+    }
+  },
+
+  async getNextLesson(lessonId: string): Promise<ApiResponse<Lesson | null>> {
+    const token = getAccessToken();
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/lessons/${lessonId}/next-lesson`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+
+      // 404 means no next lesson (end of section)
+      if (response.status === 404) {
+        return {
+          statusCode: 404,
+          data: null,
+          message: 'No next lesson',
+          success: true,
+        };
+      }
+
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: null,
+          message: 'Failed to fetch next lesson',
+          success: false,
+        };
+      }
+
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: null,
+        message: 'Failed to fetch next lesson',
+        success: false,
+      };
+    }
+  },
+
+  async markLessonCompleted(lessonId: string): Promise<ApiResponse<null>> {
+    const token = getAccessToken();
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/lessons/${lessonId}/mark-completed`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: null,
+          message: 'Failed to mark lesson as completed',
+          success: false,
+        };
+      }
+
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: null,
+        message: 'Failed to mark lesson as completed',
+        success: false,
+      };
+    }
+  },
+
+  async markLessonProgress(lessonId: string, progress: number): Promise<ApiResponse<{ progress: number; completed: boolean }>> {
+    const token = getAccessToken();
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/lessons/${lessonId}/mark-progress`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+        body: JSON.stringify({ progress }),
+      });
+
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: { progress: 0, completed: false },
+          message: 'Failed to update lesson progress',
+          success: false,
+        };
+      }
+
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: { progress: 0, completed: false },
+        message: 'Failed to update lesson progress',
+        success: false,
+      };
+    }
+  },
+
+  async getCompletedLessons(sectionId: string): Promise<ApiResponse<string[]>> {
+    const token = getAccessToken();
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/lessons/sections/${sectionId}/completed-lessons`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          data: [],
+          message: 'Failed to fetch completed lessons',
+          success: false,
+        };
+      }
+
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: [],
+        message: 'Failed to fetch completed lessons',
+        success: false,
+      };
+    }
+  },
+
   // Review endpoints
   async submitReview(courseId: string, rating: number, comment?: string): Promise<ApiResponse<Review>> {
     const token = getAccessToken();
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/courses/my-courses/${courseId}/review`, {
         method: 'POST',
@@ -640,7 +862,7 @@ export const api = {
         credentials: 'include',
         body: JSON.stringify({ rating, comment }),
       });
-      
+
       // Handle expired token
       if (response.status === 401) {
         clearAuthOnExpiry();
@@ -651,14 +873,14 @@ export const api = {
           success: false,
         };
       }
-      
+
       if (!response.ok) {
         const errorMessages: Record<number, string> = {
           400: 'Invalid rating. Please select 1-5 stars.',
           403: 'You must be enrolled to review this course.',
           409: 'You have already reviewed this course.',
         };
-        
+
         // Try to get error message from response
         try {
           const errorData = await response.json();
@@ -677,7 +899,7 @@ export const api = {
           };
         }
       }
-      
+
       return await response.json();
     } catch (error) {
       return {
@@ -691,7 +913,7 @@ export const api = {
 
   async getUserReview(courseId: string): Promise<ApiResponse<Review | null>> {
     const token = getAccessToken();
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/courses/my-courses/${courseId}/review`, {
         method: 'GET',
@@ -701,7 +923,7 @@ export const api = {
         },
         credentials: 'include',
       });
-      
+
       if (response.status === 401) {
         return {
           statusCode: 401,
@@ -710,7 +932,7 @@ export const api = {
           success: false,
         };
       }
-      
+
       if (!response.ok) {
         return {
           statusCode: response.status,
@@ -719,7 +941,7 @@ export const api = {
           success: false,
         };
       }
-      
+
       return await response.json();
     } catch (error) {
       return {

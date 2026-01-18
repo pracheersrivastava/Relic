@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import styles from './page.module.css';
-import { Navbar, HeroBanner, CourseRow, CategoryCards } from '@/components';
-import { 
+import { Navbar, HeroBanner, CourseRow, CategoryCards, WelcomeWidget } from '@/components';
+import {
   partners,
-  HomepageCourse 
+  HomepageCourse
 } from '@/data/homepageData';
 import { api, Course } from '@/lib/api';
 import Link from 'next/link';
@@ -51,10 +51,10 @@ export default function HomePage() {
   const [loadingCourses, setLoadingCourses] = useState(true);
   const { user, isAuthenticated } = useAuth();
   const { addToCart } = useCart();
-  const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({ 
-    show: false, 
-    message: '', 
-    type: 'success' 
+  const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({
+    show: false,
+    message: '',
+    type: 'success'
   });
 
   useEffect(() => {
@@ -99,12 +99,15 @@ export default function HomePage() {
   return (
     <div className={styles.homepage}>
       <Navbar />
-      
+
       <main className={styles.main}>
+        {/* Welcome Widget - shows for logged in users (above hero) */}
+        <WelcomeWidget />
+
         <HeroBanner />
-        
+
         <CategoryCards />
-        
+
         {/* Partners Section */}
         <section className={styles.partnersSection}>
           <h3 className={styles.partnersTitle}>
@@ -137,8 +140,8 @@ export default function HomePage() {
                 <div key={course.id} className={styles.courseCardNew}>
                   <div className={styles.courseCardImage}>
                     {course.image && course.image.startsWith('http') ? (
-                      <img 
-                        src={course.image} 
+                      <img
+                        src={course.image}
                         alt={course.title}
                         className={styles.courseCardImg}
                       />
@@ -163,15 +166,15 @@ export default function HomePage() {
                       <Link href={`/course/${course.id}`} className={styles.courseCardViewBtn}>
                         View Details
                       </Link>
-                      <button 
+                      <button
                         className={styles.courseCardCartBtn}
                         onClick={() => handleAddToCart(course.id)}
                         title="Add to Cart"
                       >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <circle cx="9" cy="21" r="1"/>
-                          <circle cx="20" cy="21" r="1"/>
-                          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                          <circle cx="9" cy="21" r="1" />
+                          <circle cx="20" cy="21" r="1" />
+                          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                         </svg>
                       </button>
                     </div>
@@ -186,28 +189,28 @@ export default function HomePage() {
         {backendCourses.length > 0 && (
           <section className={styles.courseSections}>
             <h2 className={styles.sectionMainTitle}>Trending courses</h2>
-            
-            <CourseRow 
-              title="Most popular →" 
-              courses={backendCourses} 
+
+            <CourseRow
+              title="Most popular →"
+              courses={backendCourses}
               direction="left"
             />
-            
-            <CourseRow 
-              title="Weekly spotlight →" 
-              courses={backendCourses} 
+
+            <CourseRow
+              title="Weekly spotlight →"
+              courses={backendCourses}
               direction="right"
             />
-            
-            <CourseRow 
-              title="In-demand AI skills →" 
-              courses={backendCourses} 
+
+            <CourseRow
+              title="In-demand AI skills →"
+              courses={backendCourses}
               direction="left"
             />
-            
-            <CourseRow 
-              title="New courses →" 
-              courses={backendCourses} 
+
+            <CourseRow
+              title="New courses →"
+              courses={backendCourses}
               direction="right"
             />
           </section>

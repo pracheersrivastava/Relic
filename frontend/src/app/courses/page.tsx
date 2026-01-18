@@ -7,9 +7,16 @@ import { Navbar } from '@/components';
 import { api, Course } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
+// Extended course with progress info
+interface CourseWithProgress extends Course {
+  progress: number;
+  totalLessons: number;
+  completedLessons: number;
+}
+
 export default function CoursesPage() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<CourseWithProgress[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'all' | 'in-progress' | 'completed'>('all');
 
@@ -23,7 +30,54 @@ export default function CoursesPage() {
       try {
         const response = await api.getEnrolledCourses();
         if (response.success && response.data) {
-          setCourses(response.data);
+          // Fetch progress for each course
+          const coursesWithProgress: CourseWithProgress[] = await Promise.all(
+            response.data.map(async (course) => {
+              let totalLessons = 0;
+              let completedLessons = 0;
+
+              try {
+                // Get sections for this course
+                const sectionsResponse = await api.getCourseSections(course._id);
+
+                if (sectionsResponse.success && sectionsResponse.data) {
+                  // For each section, get lessons and completed count
+                  await Promise.all(
+                    sectionsResponse.data.map(async (section) => {
+                      try {
+                        const lessonsResponse = await api.getSectionLessons(section._id);
+                        if (lessonsResponse.success && lessonsResponse.data) {
+                          totalLessons += lessonsResponse.data.length;
+                        }
+
+                        const completedResponse = await api.getCompletedLessons(section._id);
+                        if (completedResponse.success && completedResponse.data) {
+                          completedLessons += completedResponse.data.length;
+                        }
+                      } catch (err) {
+                        // Silently fail for individual sections
+                      }
+                    })
+                  );
+                }
+              } catch (err) {
+                // Silently fail for course progress
+              }
+
+              const progress = totalLessons > 0
+                ? Math.round((completedLessons / totalLessons) * 100)
+                : 0;
+
+              return {
+                ...course,
+                progress,
+                totalLessons,
+                completedLessons,
+              };
+            })
+          );
+
+          setCourses(coursesWithProgress);
         }
       } catch (error) {
         console.error('Failed to fetch enrolled courses:', error);
@@ -36,6 +90,14 @@ export default function CoursesPage() {
       fetchEnrolledCourses();
     }
   }, [isAuthenticated, authLoading]);
+
+  // Filter courses based on active tab
+  const filteredCourses = courses.filter(course => {
+    if (activeTab === 'all') return true;
+    if (activeTab === 'in-progress') return course.progress > 0 && course.progress < 100;
+    if (activeTab === 'completed') return course.progress === 100;
+    return true;
+  });
 
   // Loading state
   if (authLoading || isLoading) {
@@ -110,19 +172,19 @@ export default function CoursesPage() {
 
           {/* Tabs */}
           <div className={styles.tabs}>
-            <button 
+            <button
               className={`${styles.tab} ${activeTab === 'all' ? styles.active : ''}`}
               onClick={() => setActiveTab('all')}
             >
               All Courses
             </button>
-            <button 
+            <button
               className={`${styles.tab} ${activeTab === 'in-progress' ? styles.active : ''}`}
               onClick={() => setActiveTab('in-progress')}
             >
               In Progress
             </button>
-            <button 
+            <button
               className={`${styles.tab} ${activeTab === 'completed' ? styles.active : ''}`}
               onClick={() => setActiveTab('completed')}
             >
@@ -132,45 +194,57 @@ export default function CoursesPage() {
 
           {/* Course Grid */}
           <div className={styles.courseGrid}>
-            {courses.map((course) => (
-              <div key={course._id} className={styles.courseCard}>
-                <div className={styles.courseImage}>
-                  <div className={styles.progressOverlay}>
-                    <div 
-                      className={styles.progressRing}
-                      style={{ '--progress': '25' } as React.CSSProperties}
-                    >
-                      <span>25%</span>
-                    </div>
-                  </div>
-                </div>
-                <div className={styles.courseContent}>
-                  <div className={styles.courseProvider}>
-                    <span className={styles.providerBadge}>C</span>
-                    <span className={styles.providerName}>Coursera</span>
-                  </div>
-                  <h3 className={styles.courseTitle}>{course.title}</h3>
-                  {course.subtitle && (
-                    <p className={styles.courseSubtitle}>{course.subtitle}</p>
-                  )}
-                  <div className={styles.courseProgress}>
-                    <div className={styles.progressBar}>
-                      <div 
-                        className={styles.progressFill} 
-                        style={{ width: '25%' }}
-                      />
-                    </div>
-                    <span className={styles.progressText}>25% complete</span>
-                  </div>
-                  <Link 
-                    href={`/course/${course._id}`} 
-                    className={styles.continueButton}
-                  >
-                    Continue Learning
-                  </Link>
-                </div>
+            {filteredCourses.length === 0 ? (
+              <div className={styles.emptyTabState}>
+                <p>No courses in this category</p>
               </div>
-            ))}
+            ) : (
+              filteredCourses.map((course) => (
+                <div key={course._id} className={styles.courseCard}>
+                  <div className={styles.courseImage}>
+                    <div className={styles.progressOverlay}>
+                      <div
+                        className={styles.progressRing}
+                        style={{ '--progress': course.progress.toString() } as React.CSSProperties}
+                      >
+                        <span>{course.progress}%</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.courseContent}>
+                    <div className={styles.courseProvider}>
+                      <span className={styles.providerBadge}>C</span>
+                      <span className={styles.providerName}>Coursera</span>
+                    </div>
+                    <h3 className={styles.courseTitle}>{course.title}</h3>
+                    {course.subtitle && (
+                      <p className={styles.courseSubtitle}>{course.subtitle}</p>
+                    )}
+                    <div className={styles.courseProgress}>
+                      <div className={styles.progressBar}>
+                        <div
+                          className={styles.progressFill}
+                          style={{ width: `${course.progress}%` }}
+                        />
+                      </div>
+                      <span className={styles.progressText}>
+                        {course.progress === 0
+                          ? 'Not started'
+                          : course.progress === 100
+                            ? 'Complete!'
+                            : `${course.progress}% complete`}
+                      </span>
+                    </div>
+                    <Link
+                      href={`/course/${course._id}`}
+                      className={styles.continueButton}
+                    >
+                      {course.progress === 0 ? 'Start Learning' : 'Continue Learning'}
+                    </Link>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </main>

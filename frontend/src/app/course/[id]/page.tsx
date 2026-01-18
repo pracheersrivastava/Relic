@@ -1,18 +1,19 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './page.module.css';
-import { Header, VideoContainer, Sidebar, ProgressBar, Button, ReviewForm } from '@/components';
-import { api, Section, Course } from '@/lib/api';
+import { Header, Sidebar, ProgressBar, Button, ReviewForm, VideoPlayer } from '@/components';
+import { api, Course, Lesson as ApiLesson } from '@/lib/api';
 
-// Convert backend sections to frontend Module format
+// Frontend Lesson format for Sidebar
 interface Lesson {
   id: string;
   title: string;
   duration: string;
   status: 'completed' | 'current' | 'locked';
+  videoUrl?: string;
 }
 
 interface Module {
@@ -21,17 +22,150 @@ interface Module {
   lessons: Lesson[];
 }
 
+// Format duration from seconds to "X min" format
+const formatDuration = (seconds: number): string => {
+  if (!seconds) return '0 min';
+  const mins = Math.round(seconds / 60);
+  return mins === 1 ? '1 min' : `${mins} min`;
+};
+
 export default function CourseLearningPage() {
   const params = useParams();
   const router = useRouter();
   const courseId = params.id as string;
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [course, setCourse] = useState<Course | null>(null);
-  const [sections, setSections] = useState<Section[]>([]);
   const [modules, setModules] = useState<Module[]>([]);
+  const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
+  const [currentLessonId, setCurrentLessonId] = useState<string | null>(null);
+  const [currentVideoUrl, setCurrentVideoUrl] = useState<string>('');
+  const [currentLessonTitle, setCurrentLessonTitle] = useState<string>('');
+  const [videoProgress, setVideoProgress] = useState(0);
   const [error, setError] = useState('');
 
+  // Debounce progress updates to avoid too many API calls
+  const progressDebounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Get all lessons in a flat array
+  const getAllLessons = useCallback((): Lesson[] => {
+    return modules.flatMap(m => m.lessons);
+  }, [modules]);
+
+  // Get current lesson index
+  const getCurrentLessonIndex = useCallback((): number => {
+    const allLessons = getAllLessons();
+    return allLessons.findIndex(l => l.id === currentLessonId);
+  }, [getAllLessons, currentLessonId]);
+
+  // Check if there's a previous lesson
+  const hasPreviousLesson = useCallback((): boolean => {
+    return getCurrentLessonIndex() > 0;
+  }, [getCurrentLessonIndex]);
+
+  // Check if there's a next lesson
+  const hasNextLesson = useCallback((): boolean => {
+    const allLessons = getAllLessons();
+    return getCurrentLessonIndex() < allLessons.length - 1;
+  }, [getAllLessons, getCurrentLessonIndex]);
+
+  // Calculate course completion percentage
+  const getCourseProgress = useCallback((): number => {
+    const allLessons = getAllLessons();
+    if (allLessons.length === 0) return 0;
+    return Math.round((completedLessons.size / allLessons.length) * 100);
+  }, [getAllLessons, completedLessons]);
+
+  // Handle lesson click
+  const handleLessonClick = useCallback((lessonId: string) => {
+    const allLessons = getAllLessons();
+    const lesson = allLessons.find(l => l.id === lessonId);
+    if (lesson && lesson.videoUrl) {
+      setCurrentLessonId(lessonId);
+      setCurrentVideoUrl(lesson.videoUrl);
+      setCurrentLessonTitle(lesson.title);
+      setVideoProgress(0);
+      // Save last watched course and lesson for homepage widget
+      localStorage.setItem('lastWatchedCourse', courseId);
+      localStorage.setItem('lastWatchedLesson', lessonId);
+    }
+  }, [getAllLessons, courseId]);
+
+  // Mark current lesson as completed
+  const markCurrentLessonCompleted = useCallback(async () => {
+    if (!currentLessonId) return;
+
+    try {
+      await api.markLessonCompleted(currentLessonId);
+      setCompletedLessons(prev => new Set(Array.from(prev).concat([currentLessonId])));
+
+      // Update module lessons to show completed status
+      setModules(prevModules =>
+        prevModules.map(module => ({
+          ...module,
+          lessons: module.lessons.map(lesson => ({
+            ...lesson,
+            status: lesson.id === currentLessonId ? 'completed' : lesson.status,
+          })),
+        }))
+      );
+    } catch (err) {
+      console.error('Failed to mark lesson as completed:', err);
+    }
+  }, [currentLessonId]);
+
+  // Handle video ended - mark as completed (next lesson popup handles navigation)
+  const handleVideoEnded = useCallback(async () => {
+    // Mark current lesson as completed
+    await markCurrentLessonCompleted();
+  }, [markCurrentLessonCompleted]);
+
+  // Handle video progress
+  const handleVideoProgress = useCallback((progress: number) => {
+    setVideoProgress(progress);
+
+    // Debounce progress updates to backend
+    if (currentLessonId && progress > 0) {
+      if (progressDebounceRef.current) {
+        clearTimeout(progressDebounceRef.current);
+      }
+      progressDebounceRef.current = setTimeout(async () => {
+        try {
+          await api.markLessonProgress(currentLessonId, Math.round(progress));
+        } catch (err) {
+          // Silent fail for progress updates
+        }
+      }, 5000); // Update every 5 seconds
+    }
+  }, [currentLessonId]);
+
+  // Go to previous lesson
+  const handlePreviousLesson = useCallback(() => {
+    const allLessons = getAllLessons();
+    const currentIndex = getCurrentLessonIndex();
+
+    if (currentIndex > 0) {
+      const prevLesson = allLessons[currentIndex - 1];
+      if (prevLesson.videoUrl) {
+        handleLessonClick(prevLesson.id);
+      }
+    }
+  }, [getAllLessons, getCurrentLessonIndex, handleLessonClick]);
+
+  // Go to next lesson
+  const handleNextLesson = useCallback(() => {
+    const allLessons = getAllLessons();
+    const currentIndex = getCurrentLessonIndex();
+
+    if (currentIndex < allLessons.length - 1) {
+      const nextLesson = allLessons[currentIndex + 1];
+      if (nextLesson.videoUrl) {
+        handleLessonClick(nextLesson.id);
+      }
+    }
+  }, [getAllLessons, getCurrentLessonIndex, handleLessonClick]);
+
+  // Fetch course data on mount
   useEffect(() => {
     if (!api.isAuthenticated()) {
       router.push('/');
@@ -45,7 +179,7 @@ export default function CourseLearningPage() {
       try {
         // Fetch enrolled courses to get course details
         const coursesResponse = await api.getEnrolledCourses();
-        
+
         if (coursesResponse.success && coursesResponse.data) {
           const foundCourse = coursesResponse.data.find(c => c._id === courseId);
           if (foundCourse) {
@@ -58,34 +192,94 @@ export default function CourseLearningPage() {
 
         // Fetch course sections
         const sectionsResponse = await api.getCourseSections(courseId);
-        
-        if (sectionsResponse.success && sectionsResponse.data) {
-          setSections(sectionsResponse.data);
-          
-          // Convert sections to modules format for Sidebar component
-          const convertedModules: Module[] = sectionsResponse.data.map((section, index) => ({
-            id: section._id,
-            title: section.title,
-            lessons: [
-              // Since we don't have lessons API yet, create placeholder lessons
-              {
-                id: `${section._id}-lesson-1`,
-                title: `Lesson 1: Introduction`,
-                duration: '10 min',
-                status: index === 0 ? 'current' : 'locked' as const,
-              },
-              {
-                id: `${section._id}-lesson-2`,
-                title: `Lesson 2: Core Concepts`,
-                duration: '15 min',
-                status: 'locked' as const,
-              },
-            ],
-          }));
-          
-          setModules(convertedModules);
+
+        if (sectionsResponse.success && sectionsResponse.data && sectionsResponse.data.length > 0) {
+          const sections = sectionsResponse.data;
+          const allCompletedLessons = new Set<string>();
+
+          // Fetch lessons and completed status for each section
+          const modulesWithLessons: Module[] = await Promise.all(
+            sections.map(async (section) => {
+              try {
+                // Fetch lessons
+                const lessonsResponse = await api.getSectionLessons(section._id);
+
+                // Fetch completed lessons for this section
+                const completedResponse = await api.getCompletedLessons(section._id);
+                const sectionCompletedIds = completedResponse.success ? completedResponse.data : [];
+
+                // Add to overall completed set
+                sectionCompletedIds.forEach(id => allCompletedLessons.add(id));
+
+                if (lessonsResponse.success && lessonsResponse.data && lessonsResponse.data.length > 0) {
+                  // Convert API lessons to frontend format
+                  const frontendLessons: Lesson[] = lessonsResponse.data.map((apiLesson) => ({
+                    id: apiLesson._id,
+                    title: apiLesson.title,
+                    duration: formatDuration(apiLesson.duration),
+                    status: sectionCompletedIds.includes(apiLesson._id) ? 'completed' : 'current' as const,
+                    videoUrl: apiLesson.videoUrl,
+                  }));
+
+                  return {
+                    id: section._id,
+                    title: section.title,
+                    lessons: frontendLessons,
+                  };
+                }
+              } catch (err) {
+                console.error(`Failed to fetch lessons for section ${section._id}:`, err);
+              }
+
+              // Return section with placeholder lesson if API fails
+              return {
+                id: section._id,
+                title: section.title,
+                lessons: [
+                  {
+                    id: `${section._id}-placeholder-1`,
+                    title: 'Lesson content loading...',
+                    duration: '-',
+                    status: 'current' as const,
+                    videoUrl: '',
+                  },
+                ],
+              };
+            })
+          );
+
+          setModules(modulesWithLessons);
+          setCompletedLessons(allCompletedLessons);
+
+          // Set initial lesson (first non-completed lesson with a video URL)
+          let initialLessonSet = false;
+          for (const module of modulesWithLessons) {
+            for (const lesson of module.lessons) {
+              if (lesson.videoUrl && !allCompletedLessons.has(lesson.id)) {
+                setCurrentLessonId(lesson.id);
+                setCurrentVideoUrl(lesson.videoUrl);
+                setCurrentLessonTitle(lesson.title);
+                initialLessonSet = true;
+                break;
+              }
+            }
+            if (initialLessonSet) break;
+          }
+
+          // If all lessons completed, start from first
+          if (!initialLessonSet) {
+            for (const module of modulesWithLessons) {
+              const firstLesson = module.lessons.find(l => l.videoUrl);
+              if (firstLesson) {
+                setCurrentLessonId(firstLesson.id);
+                setCurrentVideoUrl(firstLesson.videoUrl || '');
+                setCurrentLessonTitle(firstLesson.title);
+                break;
+              }
+            }
+          }
         } else {
-          // If no sections found, show empty state but still allow page
+          // No sections found
           setModules([]);
         }
       } catch (err) {
@@ -98,6 +292,15 @@ export default function CourseLearningPage() {
 
     fetchCourseData();
   }, [courseId, router]);
+
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      if (progressDebounceRef.current) {
+        clearTimeout(progressDebounceRef.current);
+      }
+    };
+  }, []);
 
   if (isLoading) {
     return (
@@ -128,15 +331,7 @@ export default function CourseLearningPage() {
     );
   }
 
-  // Get current lesson (first non-locked lesson)
-  const currentLesson = modules.length > 0 
-    ? modules[0].lessons.find(l => l.status === 'current') || modules[0].lessons[0]
-    : null;
-
-  const handleLessonClick = (lessonId: string) => {
-    // When lesson API is available, this will switch the current lesson
-    console.log('Lesson clicked:', lessonId);
-  };
+  const courseProgress = getCourseProgress();
 
   return (
     <div className={styles.coursePage}>
@@ -146,21 +341,86 @@ export default function CourseLearningPage() {
           <Link href="/courses" className={styles.backLink}>
             ← Back to courses
           </Link>
-          
+
           <div className={styles.courseLayout}>
             <div className={styles.contentArea}>
-              {/* Video Area */}
-              <VideoContainer lessonTitle={currentLesson?.title || 'No lesson selected'} />
-              
-              {/* Progress + CTA Section */}
+              {/* Video Player */}
+              {currentVideoUrl ? (
+                (() => {
+                  // Calculate next lesson info for popup
+                  const allLessons = getAllLessons();
+                  const currentIndex = getCurrentLessonIndex();
+                  const nextLessonData = currentIndex < allLessons.length - 1
+                    ? allLessons[currentIndex + 1]
+                    : null;
+
+                  return (
+                    <VideoPlayer
+                      videoUrl={currentVideoUrl}
+                      lessonTitle={currentLessonTitle}
+                      nextLesson={nextLessonData ? {
+                        title: nextLessonData.title,
+                        duration: nextLessonData.duration,
+                      } : undefined}
+                      onEnded={handleVideoEnded}
+                      onProgress={handleVideoProgress}
+                      onStartNext={handleNextLesson}
+                    />
+                  );
+                })()
+              ) : (
+                <div className={styles.noVideo}>
+                  <div className={styles.noVideoContent}>
+                    <span className={styles.noVideoIcon}>🎬</span>
+                    <p>Select a lesson from the sidebar to start watching</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Lesson Navigation */}
+              <div className={styles.lessonNavigation}>
+                <button
+                  className={`${styles.navButton} ${!hasPreviousLesson() ? styles.disabled : ''}`}
+                  onClick={handlePreviousLesson}
+                  disabled={!hasPreviousLesson()}
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+                  </svg>
+                  Previous
+                </button>
+
+                <span className={styles.lessonCounter}>
+                  Lesson {getCurrentLessonIndex() + 1} of {getAllLessons().length}
+                </span>
+
+                <button
+                  className={`${styles.navButton} ${!hasNextLesson() ? styles.disabled : ''}`}
+                  onClick={handleNextLesson}
+                  disabled={!hasNextLesson()}
+                >
+                  Next
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Progress Section */}
               <div className={styles.progressSection}>
                 <div className={styles.progressHeader}>
-                  <h2 className={styles.sectionTitle}>Your progress</h2>
+                  <h2 className={styles.sectionTitle}>Course Progress</h2>
+                  <span className={styles.progressPercent}>{courseProgress}%</span>
                 </div>
-                <ProgressBar progress={0} />
-                <Button>
-                  Continue lesson
-                </Button>
+                <ProgressBar progress={courseProgress} />
+                <p className={styles.progressText}>
+                  {completedLessons.size} of {getAllLessons().length} lessons completed
+                </p>
+                {currentLessonId && !completedLessons.has(currentLessonId) && (
+                  <Button onClick={markCurrentLessonCompleted}>
+                    Mark as complete
+                  </Button>
+                )}
               </div>
 
               {/* Review Section */}
@@ -186,6 +446,7 @@ export default function CourseLearningPage() {
                 <Sidebar
                   modules={modules}
                   courseTitle={course.title}
+                  currentLessonId={currentLessonId || undefined}
                   onLessonClick={handleLessonClick}
                 />
               ) : (

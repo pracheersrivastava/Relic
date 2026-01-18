@@ -14,9 +14,19 @@ const lessonProgressSchema = new Schema(
             required: true,
             index: true,
         },
+        progress: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 100,
+        },
+        completed: {
+            type: Boolean,
+            default: false,
+        },
         completedAt: {
             type: Date,
-            default: Date.now,
+            default: null,
         },
     },
     {

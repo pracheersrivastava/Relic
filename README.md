@@ -84,14 +84,13 @@ Runs on http://localhost:3001
 
 ## Recent Updates
 
-- Added review system with star rating component
-- Course ratings and review counts now fetched from database (no dummy data)
-- Fixed ObjectId conversion for review aggregation to properly update course stats
-- Added recalculate-ratings endpoint to sync all course ratings from existing reviews
-- Password visibility toggle on all password fields (login, register, change password)
-- Change password modal accessible from header and navbar dropdown
-- Removed excessive borders/dividers for cleaner UI
-- Course sections fetched from backend API
+- **Video Player**: Custom YouTube player with controls, keyboard shortcuts, and "Next Lesson" auto-advance popup
+- **Welcome Widget**: Personalized homepage widget tracking last watched course and progress
+- **Lesson Progress**: Backend tracking of completed lessons and video progress
+- **Content**: Seeded "Machine Learning Fundamentals" course with 134 real video lessons (CampusX)
+- **Course Sections**: Full section/lesson fetching from backend with sidebar navigation
+- **Ratings System**: Dynamic course ratings from database based on user reviews
+- **UI Polish**: Fixed logout issues, improved widget positioning, and enhanced responsive design
 
 ## API Endpoints
 

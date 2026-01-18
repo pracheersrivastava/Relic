@@ -14,3 +14,5 @@ export { CategoryCards } from './CategoryCards';
 export { ChangePasswordModal } from './ChangePasswordModal';
 export { StarRating } from './StarRating';
 export { ReviewForm } from './ReviewForm';
+export { VideoPlayer } from './VideoPlayer';
+export { WelcomeWidget } from './WelcomeWidget';
