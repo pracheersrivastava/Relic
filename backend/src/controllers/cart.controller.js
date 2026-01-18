@@ -62,6 +62,7 @@ export const payCart = asyncHandler(async (req, res) => {
  */
 export const clearCart = asyncHandler(async (req, res) => {
     await cartService.clearCart(req.user._id);
+    console.log(req.params);
 
     return res.status(200).json(
         new ApiResponce(200, null, "Cart cleared")
