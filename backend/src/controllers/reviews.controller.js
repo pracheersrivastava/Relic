@@ -130,6 +130,58 @@ const recalculateAllRatings = asyncHandler(async(req, res) => {
     );
 });
 
+const reviewEdit = asyncHandler(async(req , res)=>{
+    const { courseId } = req.params;
+    const userId = req.user._id;
+    const { rating, comment } = req.body;
+
+    if (!rating || rating < 1 || rating > 5) {
+        throw new ApiError(400, "Rating must be between 1 and 5");
+    }
+
+    // Convert courseId string to ObjectId
+    const courseObjectId = new mongoose.Types.ObjectId(courseId);
+
+    const review = await Review.findOne({
+        userId,
+        courseId: courseObjectId,
+    });
+
+    if (!review) {
+        throw new ApiError(404, "Review not found");
+    }
+
+    // Update the review
+    const updatedReview = await Review.findByIdAndUpdate(
+        review._id,
+        { rating, comment },
+        { new: true }
+    );
+
+    // Recalculate average rating and total reviews
+    const stats = await Review.aggregate([
+        { $match: { courseId: courseObjectId } },
+        {
+            $group: {
+                _id: "$courseId",
+                avgRating: { $avg: "$rating" },
+                totalReviews: { $sum: 1 },
+            },
+        },
+    ]);
+
+    if (stats.length) {
+        await Course.findByIdAndUpdate(courseId, {
+            averageRating: Math.round(stats[0].avgRating * 10) / 10,
+            totalReviews: stats[0].totalReviews,
+        });
+    }
+
+    return res.status(200).json(
+        new ApiResponce(200, updatedReview, "Review updated successfully")
+    );
+});
+
 export{
     registerReview,
     getUserReview,
