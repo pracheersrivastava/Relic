@@ -90,6 +90,7 @@ Runs on http://localhost:3001
 - **Content**: Seeded "Machine Learning Fundamentals" course with 134 real video lessons (CampusX)
 - **Course Sections**: Full section/lesson fetching from backend with sidebar navigation
 - **Ratings System**: Dynamic course ratings from database based on user reviews
+- **Review Editing**: Users can edit their previously submitted reviews with updated timestamps
 - **UI Polish**: Fixed logout issues, improved widget positioning, and enhanced responsive design
 
 ## API Endpoints

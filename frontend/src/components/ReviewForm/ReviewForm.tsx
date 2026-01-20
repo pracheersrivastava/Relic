@@ -18,6 +18,7 @@ export function ReviewForm({ courseId, onReviewSubmitted }: ReviewFormProps) {
   const [error, setError] = useState('');
   const [existingReview, setExistingReview] = useState<Review | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Fetch existing review on mount
   useEffect(() => {
@@ -52,10 +53,14 @@ export function ReviewForm({ courseId, onReviewSubmitted }: ReviewFormProps) {
     setIsLoading(true);
 
     try {
-      const response = await api.submitReview(courseId, rating, comment || undefined);
-      
+      // Use updateReview if editing, submitReview for new reviews
+      const response = isEditing
+        ? await api.updateReview(courseId, rating, comment || undefined)
+        : await api.submitReview(courseId, rating, comment || undefined);
+
       if (response.success) {
         setExistingReview(response.data);
+        setIsEditing(false);
         if (onReviewSubmitted) {
           onReviewSubmitted();
         }
@@ -66,6 +71,20 @@ export function ReviewForm({ courseId, onReviewSubmitted }: ReviewFormProps) {
       setError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setIsExpanded(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    // Restore original values
+    if (existingReview) {
+      setRating(existingReview.rating);
+      setComment(existingReview.comment || '');
     }
   };
 
@@ -90,8 +109,8 @@ export function ReviewForm({ courseId, onReviewSubmitted }: ReviewFormProps) {
     );
   }
 
-  // Show existing review if already reviewed
-  if (existingReview) {
+  // Show existing review if already reviewed AND not editing
+  if (existingReview && !isEditing) {
     return (
       <div className={styles.reviewForm}>
         <div className={styles.existingReview}>
@@ -101,6 +120,13 @@ export function ReviewForm({ courseId, onReviewSubmitted }: ReviewFormProps) {
               <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
             <h3>Your Review</h3>
+            <button className={styles.editButton} onClick={handleEdit}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+              Edit
+            </button>
           </div>
           <div className={styles.existingRating}>
             <StarRating rating={existingReview.rating} size="medium" />
@@ -109,9 +135,22 @@ export function ReviewForm({ courseId, onReviewSubmitted }: ReviewFormProps) {
           {existingReview.comment && (
             <p className={styles.existingComment}>"{existingReview.comment}"</p>
           )}
-          <p className={styles.existingDate}>
-            Submitted on {new Date(existingReview.createdAt || '').toLocaleDateString()}
-          </p>
+          <div className={styles.existingDates}>
+            <p className={styles.existingDate}>
+              <span className={styles.dateLabel}>Submitted</span>
+              {new Date(existingReview.createdAt || '').toLocaleDateString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric'
+              })}
+            </p>
+            {existingReview.updatedAt && existingReview.createdAt !== existingReview.updatedAt && (
+              <p className={styles.existingDate}>
+                <span className={styles.dateLabel}>Edited</span>
+                {new Date(existingReview.updatedAt).toLocaleDateString('en-US', {
+                  month: 'short', day: 'numeric', year: 'numeric'
+                })}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -124,14 +163,22 @@ export function ReviewForm({ courseId, onReviewSubmitted }: ReviewFormProps) {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
           </svg>
-          Rate this course
+          {isEditing ? 'Edit your review' : 'Rate this course'}
         </h3>
-        {!isExpanded && (
-          <button 
+        {!isExpanded && !isEditing && (
+          <button
             className={styles.expandButton}
             onClick={() => setIsExpanded(true)}
           >
             Write a review
+          </button>
+        )}
+        {isEditing && (
+          <button
+            className={styles.cancelButton}
+            onClick={handleCancelEdit}
+          >
+            Cancel
           </button>
         )}
       </div>
@@ -141,10 +188,10 @@ export function ReviewForm({ courseId, onReviewSubmitted }: ReviewFormProps) {
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.ratingSection}>
           <span className={styles.ratingLabel}>Your rating:</span>
-          <StarRating 
-            rating={rating} 
-            size="large" 
-            interactive 
+          <StarRating
+            rating={rating}
+            size="large"
+            interactive
             onChange={setRating}
           />
           {rating > 0 && (
@@ -152,7 +199,7 @@ export function ReviewForm({ courseId, onReviewSubmitted }: ReviewFormProps) {
           )}
         </div>
 
-        {(isExpanded || rating > 0) && (
+        {(isExpanded || rating > 0 || isEditing) && (
           <>
             <div className={styles.commentSection}>
               <label htmlFor="reviewComment" className={styles.commentLabel}>
@@ -169,12 +216,12 @@ export function ReviewForm({ courseId, onReviewSubmitted }: ReviewFormProps) {
               />
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className={styles.submitButton}
               disabled={isLoading || rating === 0}
             >
-              {isLoading ? 'Submitting...' : 'Submit Review'}
+              {isLoading ? 'Submitting...' : isEditing ? 'Update Review' : 'Submit Review'}
             </button>
           </>
         )}
@@ -182,3 +229,4 @@ export function ReviewForm({ courseId, onReviewSubmitted }: ReviewFormProps) {
     </div>
   );
 }
+

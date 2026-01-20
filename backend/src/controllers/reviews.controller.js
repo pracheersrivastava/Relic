@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
-import {asyncHandler} from "../utils/asyncHandler.js";
-import {ApiError} from "../utils/ApiError.js";
-import {ApiResponce} from "../utils/ApiResponce.js";
-import {Review} from "../models/review.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponce } from "../utils/ApiResponce.js";
+import { Review } from "../models/review.model.js";
 import { Enrollment } from "../models/enrollment.model.js";
 import { Course } from "../models/course.model.js";
 
-const registerReview = asyncHandler(async(req,res)=>{
-    const{rating,comment}= req.body;
+const registerReview = asyncHandler(async (req, res) => {
+    const { rating, comment } = req.body;
     const { courseId } = req.params;
     const userId = req.user._id;
 
@@ -41,34 +41,34 @@ const registerReview = asyncHandler(async(req,res)=>{
         courseId: courseObjectId,
         rating,
         comment,
-  });
+    });
 
     // Aggregate to calculate average rating and total reviews
     const stats = await Review.aggregate([
         { $match: { courseId: courseObjectId } },
         {
-        $group: {
-            _id: "$courseId",
-            avgRating: { $avg: "$rating" },
-            totalReviews: { $sum: 1 },
-        },
+            $group: {
+                _id: "$courseId",
+                avgRating: { $avg: "$rating" },
+                totalReviews: { $sum: 1 },
+            },
         },
     ]);
 
     if (stats.length) {
         await Course.findByIdAndUpdate(courseId, {
-        averageRating: Math.round(stats[0].avgRating * 10) / 10, // Round to 1 decimal
-        totalReviews: stats[0].totalReviews,
+            averageRating: Math.round(stats[0].avgRating * 10) / 10, // Round to 1 decimal
+            totalReviews: stats[0].totalReviews,
         });
     }
 
-  return res.status(201).json(
-    new ApiResponce(201, review, "Review submitted successfully")
-  );
+    return res.status(201).json(
+        new ApiResponce(201, review, "Review submitted successfully")
+    );
 });
 
 // Get user's review for a course
-const getUserReview = asyncHandler(async(req, res) => {
+const getUserReview = asyncHandler(async (req, res) => {
     const { courseId } = req.params;
     const userId = req.user._id;
 
@@ -92,12 +92,12 @@ const getUserReview = asyncHandler(async(req, res) => {
 });
 
 // Recalculate all course ratings from existing reviews
-const recalculateAllRatings = asyncHandler(async(req, res) => {
+const recalculateAllRatings = asyncHandler(async (req, res) => {
     // Get all courses
     const courses = await Course.find({});
-    
+
     let updatedCount = 0;
-    
+
     for (const course of courses) {
         const stats = await Review.aggregate([
             { $match: { courseId: course._id } },
@@ -109,7 +109,7 @@ const recalculateAllRatings = asyncHandler(async(req, res) => {
                 },
             },
         ]);
-        
+
         if (stats.length) {
             await Course.findByIdAndUpdate(course._id, {
                 averageRating: Math.round(stats[0].avgRating * 10) / 10,
@@ -124,13 +124,13 @@ const recalculateAllRatings = asyncHandler(async(req, res) => {
             });
         }
     }
-    
+
     return res.status(200).json(
         new ApiResponce(200, { updatedCourses: updatedCount }, "All course ratings recalculated")
     );
 });
 
-const reviewEdit = asyncHandler(async(req , res)=>{
+const reviewEdit = asyncHandler(async (req, res) => {
     const { courseId } = req.params;
     const userId = req.user._id;
     const { rating, comment } = req.body;
@@ -182,8 +182,9 @@ const reviewEdit = asyncHandler(async(req , res)=>{
     );
 });
 
-export{
+export {
     registerReview,
     getUserReview,
     recalculateAllRatings,
+    reviewEdit,
 };
