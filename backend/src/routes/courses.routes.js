@@ -3,8 +3,8 @@ import {
     getAllCourses,
     getEnrolledCourses
 } from "../controllers/course.controller.js";
-import {registerReview, getUserReview, recalculateAllRatings} from "../controllers/reviews.controller.js";
-import {verifyJWT} from "../middlewares/auth.middleware.js";
+import { registerReview, getUserReview, recalculateAllRatings, reviewEdit } from "../controllers/reviews.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 const router = Router();
 
 // Public route - no auth required
@@ -15,4 +15,5 @@ router.post("/recalculate-ratings", recalculateAllRatings);
 router.get("/my-courses", verifyJWT, getEnrolledCourses)
 router.post("/my-courses/:courseId/review", verifyJWT, registerReview);
 router.get("/my-courses/:courseId/review", verifyJWT, getUserReview);
+router.put("/my-courses/:courseId/review", verifyJWT, reviewEdit);
 export default router;

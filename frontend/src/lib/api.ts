@@ -952,4 +952,58 @@ export const api = {
       };
     }
   },
+
+  async updateReview(courseId: string, rating: number, comment?: string): Promise<ApiResponse<Review>> {
+    const token = getAccessToken();
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/courses/my-courses/${courseId}/review`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+        body: JSON.stringify({ rating, comment }),
+      });
+
+      if (response.status === 401) {
+        clearAuthOnExpiry();
+        return {
+          statusCode: 401,
+          data: {} as Review,
+          message: 'Session expired. Please login again.',
+          success: false,
+        };
+      }
+
+      if (!response.ok) {
+        try {
+          const errorData = await response.json();
+          return {
+            statusCode: response.status,
+            data: {} as Review,
+            message: errorData.message || 'Failed to update review',
+            success: false,
+          };
+        } catch {
+          return {
+            statusCode: response.status,
+            data: {} as Review,
+            message: 'Failed to update review',
+            success: false,
+          };
+        }
+      }
+
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: {} as Review,
+        message: 'Failed to update review',
+        success: false,
+      };
+    }
+  },
 };
