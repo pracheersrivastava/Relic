@@ -33,19 +33,8 @@ export default function CartPage() {
     }
   };
 
-  const handleCheckout = async () => {
-    setCheckoutLoading(true);
-    const result = await checkout();
-    setCheckoutLoading(false);
-    
-    if (result.success) {
-      showToast('Checkout successful! Redirecting to your courses...', 'success');
-      setTimeout(() => {
-        router.push('/courses');
-      }, 2000);
-    } else {
-      showToast(result.message, 'error');
-    }
+  const handleCheckout = () => {
+    router.push('/checkout');
   };
 
   const handleClearCart = async () => {
@@ -139,7 +128,7 @@ export default function CartPage() {
                     </div>
                   </div>
                   <div className={styles.courseActions}>
-                    <button 
+                    <button
                       className={styles.removeButton}
                       onClick={() => handleRemove(item.courseId._id)}
                     >
@@ -157,25 +146,25 @@ export default function CartPage() {
             <div className={styles.summary}>
               <div className={styles.summaryCard}>
                 <h3 className={styles.summaryTitle}>Order Summary</h3>
-                
+
                 <div className={styles.summaryRow}>
                   <span>Subtotal ({cartCount} item{cartCount !== 1 ? 's' : ''})</span>
                   <span>${(cart.totalPrice || cart.items.reduce((sum, item) => sum + (item.courseId?.price || item.price || 1), 0)).toFixed(2)}</span>
                 </div>
-                
+
                 <div className={styles.summaryRow}>
                   <span>Discount</span>
                   <span className={styles.discount}>-$0.00</span>
                 </div>
-                
+
                 <div className={styles.summaryDivider} />
-                
+
                 <div className={`${styles.summaryRow} ${styles.totalRow}`}>
                   <span>Total</span>
                   <span className={styles.totalPrice}>${(cart.totalPrice || cart.items.reduce((sum, item) => sum + (item.courseId?.price || item.price || 1), 0)).toFixed(2)}</span>
                 </div>
 
-                <button 
+                <button
                   className={styles.checkoutButton}
                   onClick={handleCheckout}
                   disabled={checkoutLoading}
@@ -190,7 +179,7 @@ export default function CartPage() {
                   )}
                 </button>
 
-                <button 
+                <button
                   className={styles.clearButton}
                   onClick={handleClearCart}
                 >
@@ -199,7 +188,7 @@ export default function CartPage() {
 
                 <div className={styles.guarantee}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                   </svg>
                   <span>30-Day Money-Back Guarantee</span>
                 </div>
