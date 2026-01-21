@@ -47,17 +47,6 @@ export const removeFromCart = asyncHandler(async (req, res) => {
 });
 
 /**
- * Mock payment → buy all courses in cart
- */
-export const payCart = asyncHandler(async (req, res) => {
-    const order = await cartService.mockCheckout(req.user._id);
-
-    return res.status(200).json(
-        new ApiResponce(200, order, "Courses purchased successfully")
-    );
-});
-
-/**
  * Clear cart manually
  */
 export const clearCart = asyncHandler(async (req, res) => {
