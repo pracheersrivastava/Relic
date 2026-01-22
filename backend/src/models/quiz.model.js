@@ -3,23 +3,26 @@ import mongoose, { Schema } from "mongoose";
 
 const quizSchema = new Schema(
   {
-    sectionId: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "Section",
-      required: true,
-      unique: true // one quiz per section
-    },
     title: {
       type: String,
       required: true,
       trim: true
     },
+    category: {
+      type: String,
+      default: "general", // future-proofing
+      index: true
+    },
     passingScore: {
       type: Number,
-      default: 60 // percentage
+      default: 70 // percentage
     },
     timeLimit: {
       type: Number // in minutes , most of the times no time limit
+    },
+    isPublic: {
+      type: Boolean,
+      default: true // general quizzes are public
     }
   },
   { timestamps: true }

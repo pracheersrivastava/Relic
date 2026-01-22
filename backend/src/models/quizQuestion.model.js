@@ -2,25 +2,25 @@ import mongoose, { Schema } from "mongoose";
 
 const quizQuestionSchema = new Schema(
   {
-    quizId: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "Quiz",
-      required: true
-    },
     question: {
       type: String,
       required: true
     },
     options: [
       {
-        text: String,
-        isCorrect: Boolean
+        text: { type: String, required: true },
+        isCorrect: { type: Boolean, default: false }
       }
     ],
-    order: {
-      type: Number,
-      required: true
-    }
+    explanation: {
+      type: String,
+      trim: true
+    },
+    category: {
+      type: String,
+      index: true,
+      default: "Logistics"
+    },
   },
   { timestamps: true }
 );

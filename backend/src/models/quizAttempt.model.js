@@ -5,7 +5,7 @@ const quizAttemptSchema = new Schema(
     userId: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "User",
-      required: true
+      required: false
     },
     quizId: {
       type: mongoose.SchemaTypes.ObjectId,
@@ -20,13 +20,20 @@ const quizAttemptSchema = new Schema(
       type: Boolean,
       required: true
     },
+    percentage: {
+      type: Number,
+      required: true,
+      min: 0,
+      max: 100
+    },
     answers: [
       {
         questionId: {
           type: mongoose.SchemaTypes.ObjectId,
           ref: "QuizQuestion"
         },
-        selectedOptionIndex: Number
+        selectedOptionIndex: Number,
+        isCorrect: Boolean,
       }
     ],
     attemptedAt: {
@@ -36,8 +43,6 @@ const quizAttemptSchema = new Schema(
   },
   { timestamps: true }
 );
-
-quizAttemptSchema.index({ userId: 1, quizId: 1 });
 
 export const QuizAttempt = mongoose.model(
   "QuizAttempt",
