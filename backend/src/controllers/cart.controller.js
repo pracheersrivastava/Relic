@@ -57,3 +57,13 @@ export const clearCart = asyncHandler(async (req, res) => {
         new ApiResponce(200, null, "Cart cleared")
     );
 });
+
+export const payCart = asyncHandler(async (req, res) => {
+    const paymentIntent = await cartService.createPaymentIntent(
+        req.user._id
+    );
+
+    return res.status(200).json(
+        new ApiResponce(200, paymentIntent, "Payment intent created")
+    );
+});

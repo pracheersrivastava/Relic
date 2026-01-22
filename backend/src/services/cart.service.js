@@ -4,7 +4,7 @@ import { Enrollment } from "../models/enrollment.model.js";
 import { Order } from "../models/order.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { createEnrollmentsFromOrder } from "./enrollment.service.js";
-
+import Stripe from "stripe";
 /**
  * Add a course to cart
  */
@@ -106,10 +106,11 @@ export const clearCart = async (userId) => {
     await Cart.deleteOne({ userId });
 };
 
-/**
- * Mock checkout (NO real payment)
- */
-export const mockCheckout = async (userId) => {
+console.log("STRIPE KEY:", process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+
+export const createPaymentIntent = async (userId) => {
     const cart = await Cart.findOne({ userId })
         .populate("items.courseId");
 
@@ -117,43 +118,32 @@ export const mockCheckout = async (userId) => {
         throw new ApiError(400, "Cart is empty");
     }
 
-    // Prevent purchasing already enrolled courses
-    const enrolledCourses = await Enrollment.find({
-        userId,
-        courseId: { $in: cart.items.map(i => i.courseId._id) }
-    });
-
-    if (enrolledCourses.length > 0) {
-        throw new ApiError(
-            400,
-            "One or more courses already enrolled"
-        );
-    }
-
-    // Prepare order items
-    const items = cart.items.map(item => ({
-        courseId: item.courseId._id,
-        priceAtPurchase: item.courseId.price
-    }));
-
-    const totalAmount = items.reduce(
-        (sum, item) => sum + item.priceAtPurchase,
+    const totalAmount = cart.items.reduce(
+        (sum, item) => sum + Number(item.courseId.price),
         0
     );
 
-    // Create order (mock paid)
-    const order = await Order.create({
-        userId,
-        items,
-        totalAmount,
-        paymentStatus: "paid"
-    });
-    
-    // Create enrollments from order
-    await createEnrollmentsFromOrder(order);
+    const amountInCents = Math.round(totalAmount * 100);
 
-    // Clear cart
-    await Cart.deleteOne({ userId });
+    if (amountInCents < 50) {
+        throw new ApiError(400, "Minimum amount is $0.50");
+    }
 
-    return order;
+    try {
+        const paymentIntent = await stripe.paymentIntents.create({
+        amount: amountInCents,
+        currency: "usd",
+        payment_method_types: ["card"],
+        metadata: {
+            userId: userId.toString(),
+        },
+        });
+
+        return paymentIntent;
+
+    } catch (err) {
+        console.error("STRIPE ERROR:", err);
+        throw new ApiError(500, err.message);
+    }
 };
+

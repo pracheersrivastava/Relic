@@ -18,9 +18,16 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
         (sum, item) => sum + item.price,
         0
     );
+    const amountInCents = Math.round(totalAmount * 100);
+
+    console.log({
+        totalAmount,
+        amountInCents,
+        type: typeof amountInCents
+    });
 
     const paymentIntent = await stripe.paymentIntents.create({
-        amount: totalAmount * 100, // cents
+        amount: amountInCents, // cents
         currency: "usd",
         automatic_payment_methods: { enabled: true },
         metadata: {
