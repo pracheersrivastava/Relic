@@ -1,16 +1,16 @@
 import {Router} from "express";
 import {
-    getQuizBySection,
+    getQuiz,
     submitQuiz,
     getMyQuizResult
 } from "../controllers/quiz.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { optionalAuth } from "../middlewares/optionalAuth.middleware.js";
 
 const router = Router();
 
-//Protected Routes
-router.route("sections/:sectionId/quiz").get(verifyJWT,getQuizBySection);
-router.route("sections/:sectionId/quiz").post(verifyJWT,submitQuiz);
-router.route("sections/:sectionId/quiz/result").get(verifyJWT,getMyQuizResult);
+router.route("/quizzes/:quizId").get(getQuiz);
+router.route("/quizzes/:quizId/submit").post(optionalAuth, submitQuiz);
+router.route("/quizzes/:quizId/result").get(verifyJWT, getMyQuizResult);
 
 export default router;
