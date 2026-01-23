@@ -4,7 +4,6 @@ import { Enrollment } from "../models/enrollment.model.js";
 import { Order } from "../models/order.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { createEnrollmentsFromOrder } from "./enrollment.service.js";
-import Stripe from "stripe";
 /**
  * Add a course to cart
  */
@@ -94,7 +93,7 @@ export const removeFromCart = async (userId, courseId) => {
     );
 
     await cart.save();
-    
+
     // Return populated cart with totalPrice
     return getUserCart(userId);
 };
@@ -105,45 +104,3 @@ export const removeFromCart = async (userId, courseId) => {
 export const clearCart = async (userId) => {
     await Cart.deleteOne({ userId });
 };
-
-console.log("STRIPE KEY:", process.env.STRIPE_SECRET_KEY);
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-
-export const createPaymentIntent = async (userId) => {
-    const cart = await Cart.findOne({ userId })
-        .populate("items.courseId");
-
-    if (!cart || cart.items.length === 0) {
-        throw new ApiError(400, "Cart is empty");
-    }
-
-    const totalAmount = cart.items.reduce(
-        (sum, item) => sum + Number(item.courseId.price),
-        0
-    );
-
-    const amountInCents = Math.round(totalAmount * 100);
-
-    if (amountInCents < 50) {
-        throw new ApiError(400, "Minimum amount is $0.50");
-    }
-
-    try {
-        const paymentIntent = await stripe.paymentIntents.create({
-        amount: amountInCents,
-        currency: "usd",
-        payment_method_types: ["card"],
-        metadata: {
-            userId: userId.toString(),
-        },
-        });
-
-        return paymentIntent;
-
-    } catch (err) {
-        console.error("STRIPE ERROR:", err);
-        throw new ApiError(500, err.message);
-    }
-};
-

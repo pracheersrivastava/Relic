@@ -72,6 +72,36 @@
   background-color: var(--color-card-background);
 }
 
+.practiceTestLink {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  text-decoration: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--button-radius);
+  background: linear-gradient(135deg, rgba(0, 86, 210, 0.08) 0%, rgba(0, 168, 107, 0.08) 100%);
+  border: 1px solid var(--color-primary);
+  transition: all 0.2s;
+}
+
+.practiceTestLink:hover {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #003E9C 100%);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 86, 210, 0.25);
+}
+
+.practiceTestLink svg {
+  transition: transform 0.2s;
+}
+
+.practiceTestLink:hover svg {
+  transform: scale(1.1);
+}
+
 .centerSection {
   flex: 1;
   max-width: 500px;
@@ -228,6 +258,7 @@
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -349,6 +380,7 @@
     opacity: 0;
     transform: translateX(-50%) translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
@@ -370,6 +402,10 @@
   }
 
   .navLinkAnchor {
+    display: none;
+  }
+
+  .practiceTestLink {
     display: none;
   }
 

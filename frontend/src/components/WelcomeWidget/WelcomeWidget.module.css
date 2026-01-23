@@ -4,7 +4,7 @@
     padding: 0 var(--spacing-lg);
 }
 
-.welcomeContent {
+.widgetContainer {
     background: linear-gradient(135deg, var(--color-primary) 0%, #003E9C 100%);
     border-radius: 20px;
     padding: var(--spacing-xl);
@@ -13,38 +13,80 @@
     overflow: hidden;
 }
 
-.welcomeContent::before {
+.widgetContainer::before {
     content: '';
     position: absolute;
     top: 0;
     right: 0;
-    width: 300px;
+    width: 400px;
     height: 100%;
     background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 0 L100 50 L50 100 L0 50 Z' fill='rgba(255,255,255,0.05)'/%3E%3C/svg%3E");
     pointer-events: none;
 }
 
 .welcomeTitle {
-    font-size: var(--font-size-page-title);
+    font-size: var(--font-size-section-header);
     font-weight: var(--font-weight-bold);
     margin-bottom: var(--spacing-lg);
 }
 
+.guestTitle {
+    font-size: var(--font-size-page-title);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+/* Cards Row */
+.cardsRow {
+    display: flex;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+/* Course Card */
 .courseCard {
+    flex: 1;
+    min-width: 280px;
+    background-color: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.cardHeader {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.cardLabel {
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+}
+
+.cardLabelAlt {
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #00D68F;
+}
+
+.cardBody {
     display: flex;
     align-items: center;
     gap: var(--spacing-lg);
-    background-color: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(8px);
-    border-radius: 16px;
     padding: var(--spacing-lg);
-    max-width: 500px;
 }
 
+/* Progress Circle */
 .progressCircle {
     position: relative;
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     flex-shrink: 0;
 }
 
@@ -67,11 +109,12 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: var(--font-size-body);
+    font-size: var(--font-size-label);
     font-weight: var(--font-weight-bold);
     color: white;
 }
 
+/* Course Info */
 .courseInfo {
     flex: 1;
     min-width: 0;
@@ -80,7 +123,7 @@
 .courseTitle {
     font-size: var(--font-size-body);
     font-weight: var(--font-weight-semibold);
-    margin-bottom: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
     color: white;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -88,22 +131,14 @@
     overflow: hidden;
 }
 
-.courseSubtitle {
-    font-size: var(--font-size-small);
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: var(--spacing-md);
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
 .resumeButton {
-    display: inline-block;
-    padding: var(--spacing-sm) var(--spacing-lg);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
     background-color: white;
     color: var(--color-primary);
-    font-size: var(--font-size-label);
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight-semibold);
     border-radius: 8px;
     text-decoration: none;
@@ -116,26 +151,119 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* Practice Test Card */
+.practiceCard {
+    flex: 1;
+    min-width: 280px;
+    background: linear-gradient(135deg, rgba(0, 214, 143, 0.2) 0%, rgba(0, 168, 107, 0.2) 100%);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 214, 143, 0.3);
+}
+
+.practiceCardFull {
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.practiceIcon {
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 214, 143, 0.3);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #00D68F;
+}
+
+.practiceInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.practiceTitle {
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-xs);
+    color: white;
+}
+
+.practiceDesc {
+    font-size: var(--font-size-small);
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: var(--spacing-sm);
+}
+
+.startQuizButton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: linear-gradient(135deg, #00D68F 0%, #00A86B 100%);
+    color: white;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-semibold);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 12px rgba(0, 214, 143, 0.3);
+}
+
+.startQuizButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 214, 143, 0.4);
+}
+
+.startQuizButton svg {
+    transition: transform 0.2s;
+}
+
+.startQuizButton:hover svg {
+    transform: translateX(3px);
+}
+
 /* Mobile responsive */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     .welcomeWidget {
         padding: 0 var(--spacing-md);
     }
 
-    .welcomeContent {
+    .widgetContainer {
         padding: var(--spacing-lg);
     }
 
     .welcomeTitle {
-        font-size: var(--font-size-subtitle);
+        font-size: var(--font-size-body);
     }
 
-    .courseCard {
+    .guestTitle {
+        font-size: var(--font-size-section-header);
+    }
+
+    .cardsRow {
+        flex-direction: column;
+    }
+
+    .courseCard,
+    .practiceCard {
+        min-width: auto;
+    }
+
+    .practiceCardFull {
+        max-width: none;
+    }
+
+    .cardBody {
         flex-direction: column;
         text-align: center;
+        gap: var(--spacing-md);
     }
 
-    .courseInfo {
+    .courseInfo,
+    .practiceInfo {
         display: flex;
         flex-direction: column;
         align-items: center;

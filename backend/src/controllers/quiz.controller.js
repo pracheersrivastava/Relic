@@ -18,24 +18,41 @@ const getQuiz = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid quiz id");
   }
 
-  const quiz = await Quiz.findById(quizId).select("-__v");
+  let quiz = await Quiz.findById(quizId).select("-__v");
+
+  // Auto-create or update quiz with correct name
   if (!quiz) {
-    throw new ApiError(404, "Quiz not found");
+    quiz = await Quiz.create({
+      _id: new mongoose.Types.ObjectId(quizId),
+      title: "CDL Practice Test",
+      category: "Trucking",
+      passingScore: 70,
+      timeLimit: 30,
+      isPublic: true
+    });
+  } else if (quiz.title !== "CDL Practice Test") {
+    // Update existing quiz with correct name
+    quiz.title = "CDL Practice Test";
+    quiz.category = "Trucking";
+    await quiz.save();
   }
 
+  // Fetch random questions from all available questions
   const questions = await QuizQuestion.aggregate([
-    { $match: { quizId: quiz._id } },
     { $sample: { size: QUESTION_LIMIT } }
   ]);
 
-  if (questions.length < QUESTION_LIMIT) {
-    throw new ApiError(400, "Not enough questions in quiz");
+  // Require at least 5 questions to run a quiz
+  if (questions.length < 5) {
+    throw new ApiError(400, "Not enough questions in database (minimum 5 required)");
   }
 
+  // Include explanation and isCorrect for instant feedback on frontend
   const sanitizedQuestions = questions.map(q => ({
     _id: q._id,
     question: q.question,
-    options: q.options.map(o => ({ text: o.text }))
+    explanation: q.explanation || '',
+    options: q.options.map(o => ({ text: o.text, isCorrect: o.isCorrect }))
   }));
 
   return res.status(200).json(
@@ -102,6 +119,7 @@ const submitQuiz = asyncHandler(async (req, res) => {
         quizId,
         score,
         passed,
+        percentage: score,
         answers
       });
     }
@@ -148,7 +166,7 @@ const getMyQuizResult = asyncHandler(async (req, res) => {
 });
 
 export {
-    getQuiz,
-    submitQuiz,
-    getMyQuizResult
+  getQuiz,
+  submitQuiz,
+  getMyQuizResult
 };
