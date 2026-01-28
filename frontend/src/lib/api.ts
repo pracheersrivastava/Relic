@@ -11,6 +11,7 @@ export interface User {
   _id: string;
   email: string;
   fullname: string;
+  role?: 'user' | 'admin';
 }
 
 interface LoginResponse {
@@ -21,6 +22,15 @@ interface LoginResponse {
 
 interface RegisterResponse {
   user: User;
+}
+
+// Dashboard stats type
+export interface DashboardStats {
+  totalUsers: number;
+  totalCourses: number;
+  totalOrders: number;
+  totalQuizAtempts: number;
+  totalRevenue: number;
 }
 
 // Course type from backend
@@ -173,9 +183,25 @@ const clearAuthOnExpiry = () => {
   }
 };
 
-// Handle response and check for auth errors
-const handleAuthError = (response: Response): boolean => {
+// Handle response and check for auth errors (401 = unauthorized/token expired)
+const handleAuthError = async (response: Response): Promise<boolean> => {
   if (response.status === 401) {
+    // Try to get error message from response
+    try {
+      const clonedResponse = response.clone();
+      const data = await clonedResponse.json();
+      const message = data.message || data.error || '';
+      if (message.toLowerCase().includes('expired') ||
+        message.toLowerCase().includes('invalid token') ||
+        message.toLowerCase().includes('unauthorized')) {
+        clearAuthOnExpiry();
+        return true;
+      }
+    } catch {
+      // If can't parse JSON, still clear auth on 401
+      clearAuthOnExpiry();
+      return true;
+    }
     clearAuthOnExpiry();
     return true;
   }
@@ -338,6 +364,15 @@ export const api = {
       });
 
       if (!response.ok) {
+        // Check for auth errors (expired token, etc.) and redirect if needed
+        if (await handleAuthError(response)) {
+          return {
+            statusCode: 401,
+            data: [],
+            message: 'Session expired. Please login again.',
+            success: false,
+          };
+        }
         return {
           statusCode: response.status,
           data: [],
@@ -371,12 +406,13 @@ export const api = {
         credentials: 'include',
       });
 
-      // Handle expired token - don't redirect, just return empty
+      // Handle expired token - redirect to login
       if (response.status === 401) {
+        await handleAuthError(response);
         return {
           statusCode: response.status,
           data: { items: [], totalPrice: 0 } as Cart,
-          message: 'Session expired',
+          message: 'Session expired. Please login again.',
           success: false,
         };
       }
@@ -1258,6 +1294,16 @@ export const api = {
       });
 
       if (!response.ok) {
+        // Check for auth errors (expired token, etc.) and redirect if needed
+        if (response.status === 401) {
+          await handleAuthError(response);
+          return {
+            statusCode: 401,
+            data: {} as QuizAttempt,
+            message: 'Session expired. Please login again.',
+            success: false,
+          };
+        }
         return {
           statusCode: response.status,
           data: {} as QuizAttempt,
@@ -1272,6 +1318,64 @@ export const api = {
         statusCode: 500,
         data: {} as QuizAttempt,
         message: 'Failed to fetch quiz result',
+        success: false,
+      };
+    }
+  },
+
+  // Admin Dashboard
+  async getDashboardStats(): Promise<ApiResponse<DashboardStats>> {
+    try {
+      const token = getAccessToken();
+      if (!token) {
+        return {
+          statusCode: 401,
+          data: {} as DashboardStats,
+          message: 'Login required',
+          success: false,
+        };
+      }
+
+      const response = await fetch(`${API_BASE_URL}/dashboard/stats`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          await handleAuthError(response);
+          return {
+            statusCode: 401,
+            data: {} as DashboardStats,
+            message: 'Session expired. Please login again.',
+            success: false,
+          };
+        }
+        if (response.status === 403) {
+          return {
+            statusCode: 403,
+            data: {} as DashboardStats,
+            message: 'Access denied. Admin privileges required.',
+            success: false,
+          };
+        }
+        return {
+          statusCode: response.status,
+          data: {} as DashboardStats,
+          message: 'Failed to fetch dashboard stats',
+          success: false,
+        };
+      }
+
+      return await response.json();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: {} as DashboardStats,
+        message: 'Failed to fetch dashboard stats',
         success: false,
       };
     }

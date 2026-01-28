@@ -15,12 +15,24 @@ export const createEnrollmentsFromOrder = async (order) => {
         orderId: order._id
     }));
 
-    /**
-     * ordered: false
-     * → even if one enrollment already exists,
-     *   others will still be inserted
-     */
-    await Enrollment.insertMany(enrollments, {
-        ordered: false
-    });
+    try {
+        /**
+         * ordered: false
+         * → even if one enrollment already exists,
+         *   others will still be inserted
+         */
+        await Enrollment.insertMany(enrollments, {
+            ordered: false
+        });
+    } catch (error) {
+        // Ignore duplicate key errors (user already enrolled)
+        // This can happen if the same payment is confirmed twice
+        // or if user was previously enrolled
+        if (error.code !== 11000 && !error.message?.includes('duplicate key')) {
+            throw error;
+        }
+        // Log but don't fail for duplicates
+        console.log('Some enrollments already exist, skipping duplicates');
+    }
 };
+

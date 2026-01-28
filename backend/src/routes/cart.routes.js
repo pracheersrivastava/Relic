@@ -3,7 +3,8 @@ import {
     addToCart,
     getMyCart,
     removeFromCart,
-    clearCart
+    clearCart,
+    payCart
 } from "../controllers/cart.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -20,5 +21,8 @@ router.delete("/remove/:courseId", verifyJWT, removeFromCart);
 
 // Clear cart
 router.delete("/clear", verifyJWT, clearCart);
+
+// Pay for cart (creates order and enrollments)
+router.post("/pay", verifyJWT, payCart);
 
 export default router;
