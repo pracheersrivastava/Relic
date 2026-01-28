@@ -31,7 +31,7 @@ const orderSchema = new Schema(
 
     paymentStatus: {
         type: String,
-        enum: ["paid"],
+        enum: ["paid", "unpaid"],
         default: "paid"
     }
 },
