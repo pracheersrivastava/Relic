@@ -56,7 +56,7 @@ cd frontend
 npm install
 npm run dev
 ```
-Runs on http://localhost:3001
+Runs on http://localhost:3000
 
 ## Pages
 
