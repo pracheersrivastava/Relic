@@ -1,57 +1,58 @@
-import mongoose,{Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 
 const userSchema = new Schema({
-    email:{
-            type: String,
-            required: true,
-            unique: true,
-            lowercase: true, 
-            trim: true,
-        },
-    fullname:{
-            type: String,
-            required: true,
-            trim: true,
-            index: true,
-        },
-    password:{
-            type:String,
-            required:[true,"Password is required"]
-        },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true,
+    },
+    fullname: {
+        type: String,
+        required: true,
+        trim: true,
+        index: true,
+    },
+    password: {
+        type: String,
+        required: [true, "Password is required"]
+    },
     role: {
         type: String,
         enum: ["user", "admin"],
         default: "user",
         index: true,
     },
-    refreshToken:{
-            type:String,
-        }   
-    },
+    refreshToken: {
+        type: String,
+    }
+},
     {
         timestamps: true,
     }
 )
 
-userSchema.pre("save",async function (){
-    if(!this.isModified("password")) //check if password is not moddified skip the hashing
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) //check if password is not moddified skip the hashing
         return;
-    this.password = await bcrypt.hash(this.password,8);
+    this.password = await bcrypt.hash(this.password, 8);
 }) //pre hook
 
-userSchema.methods.isPasswordCorrect = async function (password){
-    return await bcrypt.compare(password,this.password); //return is a boolean
+userSchema.methods.isPasswordCorrect = async function (password) {
+    return await bcrypt.compare(password, this.password); //return is a boolean
 }; //checkif Password is valid
 
-userSchema.methods.generateAccessToken = function(){
+userSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
             _id: this._id,
             email: this.email,
             fullname: this.fullname,
+            role: this.role,
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
@@ -60,12 +61,13 @@ userSchema.methods.generateAccessToken = function(){
     )
 };
 
-userSchema.methods.generateRefreshToken = function(){
-        return jwt.sign(
+userSchema.methods.generateRefreshToken = function () {
+    return jwt.sign(
         {
             _id: this._id,
             email: this.email,
             fullname: this.fullname,
+            role: this.role,
         },
         process.env.REFRESH_TOKEN_SECRET,
         {
@@ -75,4 +77,4 @@ userSchema.methods.generateRefreshToken = function(){
 };
 
 
-export const User = mongoose.model("User",userSchema);
+export const User = mongoose.model("User", userSchema);
