@@ -327,6 +327,19 @@
   color: var(--color-text-secondary);
 }
 
+.adminItem {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.adminItem svg {
+  color: var(--color-primary);
+}
+
+.adminItem:hover {
+  background-color: var(--color-primary-light);
+}
+
 .loginButton {
   font-size: var(--font-size-label);
   font-weight: var(--font-weight-semibold);

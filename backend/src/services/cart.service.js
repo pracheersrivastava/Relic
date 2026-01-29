@@ -104,3 +104,40 @@ export const removeFromCart = async (userId, courseId) => {
 export const clearCart = async (userId) => {
     await Cart.deleteOne({ userId });
 };
+
+/**
+ * Mock checkout - creates order and enrollments without real payment
+ * Used when Stripe payment is handled by frontend
+ */
+export const mockCheckout = async (userId) => {
+    const cart = await Cart.findOne({ userId })
+        .populate("items.courseId");
+
+    if (!cart || cart.items.length === 0) {
+        throw new ApiError(400, "Cart is empty");
+    }
+
+    const totalAmount = cart.items.reduce(
+        (sum, item) => sum + Number(item.courseId?.price || item.price || 0),
+        0
+    );
+
+    // Create order
+    const order = await Order.create({
+        userId,
+        items: cart.items.map(item => ({
+            courseId: item.courseId._id || item.courseId,
+            priceAtPurchase: item.courseId?.price || item.price
+        })),
+        totalAmount,
+        paymentStatus: "paid"
+    });
+
+    // Create enrollments
+    await createEnrollmentsFromOrder(order);
+
+    // Clear cart
+    await clearCart(userId);
+
+    return order;
+};

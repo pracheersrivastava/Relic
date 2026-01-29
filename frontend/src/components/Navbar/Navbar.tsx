@@ -11,7 +11,7 @@ import { useCart } from '@/context/CartContext';
 
 export const Navbar: React.FC = () => {
   const router = useRouter();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { cartCount } = useCart();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -63,9 +63,14 @@ export const Navbar: React.FC = () => {
             Explore
           </Link>
           {isAuthenticated && (
-            <Link href="/courses" className={styles.navLinkAnchor}>
-              My Learning
-            </Link>
+            <>
+              <Link href="/courses" className={styles.navLinkAnchor}>
+                My Learning
+              </Link>
+              <Link href="/quiz" className={styles.navLinkAnchor}>
+                Quiz Results
+              </Link>
+            </>
           )}
         </div>
 
@@ -138,6 +143,14 @@ export const Navbar: React.FC = () => {
                       </svg>
                       Cart {cartCount > 0 && `(${cartCount})`}
                     </Link>
+                    {isAdmin && (
+                      <Link href="/admin" className={`${styles.dropdownItem} ${styles.adminItem}`} onClick={() => setShowDropdown(false)}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                        Admin Dashboard
+                      </Link>
+                    )}
                     <button
                       className={styles.dropdownItem}
                       onClick={() => {

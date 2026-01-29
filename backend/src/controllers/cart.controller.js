@@ -1,6 +1,6 @@
-import {asyncHandler} from "../utils/asyncHandler.js";
-import {ApiError} from "../utils/ApiError.js";
-import {ApiResponce} from "../utils/ApiResponce.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponce } from "../utils/ApiResponce.js";
 import * as cartService from "../services/cart.service.js";
 
 /**
@@ -59,11 +59,9 @@ export const clearCart = asyncHandler(async (req, res) => {
 });
 
 export const payCart = asyncHandler(async (req, res) => {
-    const paymentIntent = await cartService.createPaymentIntent(
-        req.user._id
-    );
+    const order = await cartService.mockCheckout(req.user._id);
 
     return res.status(200).json(
-        new ApiResponce(200, paymentIntent, "Payment intent created")
+        new ApiResponce(200, order, "Checkout successful - courses enrolled")
     );
 });

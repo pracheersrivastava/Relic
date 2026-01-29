@@ -15,7 +15,7 @@ const getDashboardStats = asyncHandler(async (req, res) => {
         {
             $group: {
                 _id: null,
-                totalRevenue: { $sum: "$totalPrice" }
+                totalRevenue: { $sum: "$totalAmount" }
             }
         }
     ]);

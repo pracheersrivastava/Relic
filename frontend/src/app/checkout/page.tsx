@@ -1,140 +1,45 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Navbar } from '@/components';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
-import { api } from '@/lib/api';
 import styles from './page.module.css';
-
-// Initialize Stripe - replace with your publishable key
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
-
-function CheckoutForm({ onSuccess }: { onSuccess: () => void }) {
-    const stripe = useStripe();
-    const elements = useElements();
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!stripe || !elements) {
-            return;
-        }
-
-        setIsProcessing(true);
-        setError(null);
-
-        const { error: submitError, paymentIntent } = await stripe.confirmPayment({
-            elements,
-            confirmParams: {
-                return_url: `${window.location.origin}/checkout/success`,
-            },
-            redirect: 'if_required',
-        });
-
-        if (submitError) {
-            setError(submitError.message || 'Payment failed');
-            setIsProcessing(false);
-            return;
-        }
-
-        if (paymentIntent && paymentIntent.status === 'succeeded') {
-            // Confirm payment on backend
-            const confirmResult = await api.confirmPayment(paymentIntent.id);
-            if (confirmResult.success) {
-                onSuccess();
-            } else {
-                setError(confirmResult.message);
-            }
-        }
-
-        setIsProcessing(false);
-    };
-
-    return (
-        <form onSubmit={handleSubmit} className={styles.paymentForm}>
-            <PaymentElement className={styles.paymentElement} />
-
-            {error && (
-                <div className={styles.errorMessage}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="15" y1="9" x2="9" y2="15" />
-                        <line x1="9" y1="9" x2="15" y2="15" />
-                    </svg>
-                    {error}
-                </div>
-            )}
-
-            <button
-                type="submit"
-                className={styles.payButton}
-                disabled={!stripe || isProcessing}
-            >
-                {isProcessing ? (
-                    <>
-                        <span className={styles.spinner} />
-                        Processing...
-                    </>
-                ) : (
-                    <>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-                            <line x1="1" y1="10" x2="23" y2="10" />
-                        </svg>
-                        Pay Now
-                    </>
-                )}
-            </button>
-
-            <div className={styles.securityNote}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
-                Secure payment powered by Stripe
-            </div>
-        </form>
-    );
-}
 
 export default function CheckoutPage() {
     const router = useRouter();
     const { isAuthenticated, isLoading: authLoading } = useAuth();
-    const { cart, cartCount, isLoading: cartLoading, refreshCart } = useCart();
-    const [clientSecret, setClientSecret] = useState<string | null>(null);
+    const { cart, cartCount, isLoading: cartLoading } = useCart();
+    const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-    useEffect(() => {
-        const initializePayment = async () => {
-            if (!isAuthenticated || cartCount === 0) return;
+    const handleCheckout = async () => {
+        setIsProcessing(true);
+        setError(null);
 
-            const response = await api.createPaymentIntent();
-            if (response.success && response.data.clientSecret) {
-                setClientSecret(response.data.clientSecret);
+        try {
+            const response = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+
+            if (data.url) {
+                // Redirect to Stripe Checkout
+                window.location.href = data.url;
             } else {
-                setError(response.message);
+                setError(data.error || 'Failed to create checkout session');
             }
-        };
-
-        if (!authLoading && !cartLoading) {
-            initializePayment();
+        } catch (err: any) {
+            setError(err.message || 'An error occurred');
+        } finally {
+            setIsProcessing(false);
         }
-    }, [isAuthenticated, cartCount, authLoading, cartLoading]);
-
-    const handlePaymentSuccess = async () => {
-        setPaymentSuccess(true);
-        await refreshCart();
-        setTimeout(() => {
-            router.push('/courses');
-        }, 3000);
     };
 
     // Loading state
@@ -184,28 +89,6 @@ export default function CheckoutPage() {
                         <Link href="/" className={styles.primaryButton}>
                             Browse Courses
                         </Link>
-                    </div>
-                </main>
-            </div>
-        );
-    }
-
-    // Payment success
-    if (paymentSuccess) {
-        return (
-            <div className={styles.page}>
-                <Navbar />
-                <main className={styles.main}>
-                    <div className={styles.successState}>
-                        <div className={styles.successIcon}>
-                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                <polyline points="22 4 12 14.01 9 11.01" />
-                            </svg>
-                        </div>
-                        <h2>Payment Successful!</h2>
-                        <p>Thank you for your purchase. You now have access to your courses.</p>
-                        <p className={styles.redirect}>Redirecting to your courses...</p>
                     </div>
                 </main>
             </div>
@@ -265,9 +148,9 @@ export default function CheckoutPage() {
                             </div>
                         </div>
 
-                        {/* Payment Form */}
+                        {/* Payment Section */}
                         <div className={styles.paymentSection}>
-                            <h3 className={styles.sectionTitle}>Payment Details</h3>
+                            <h3 className={styles.sectionTitle}>Payment</h3>
 
                             {error && (
                                 <div className={styles.errorBanner}>
@@ -280,28 +163,46 @@ export default function CheckoutPage() {
                                 </div>
                             )}
 
-                            {clientSecret ? (
-                                <Elements
-                                    stripe={stripePromise}
-                                    options={{
-                                        clientSecret,
-                                        appearance: {
-                                            theme: 'stripe',
-                                            variables: {
-                                                colorPrimary: '#0056d2',
-                                                borderRadius: '8px',
-                                            },
-                                        },
-                                    }}
-                                >
-                                    <CheckoutForm onSuccess={handlePaymentSuccess} />
-                                </Elements>
-                            ) : (
-                                <div className={styles.loadingPayment}>
-                                    <div className={styles.spinner} />
-                                    <p>Initializing secure payment...</p>
-                                </div>
-                            )}
+                            <div className={styles.stripeInfo}>
+                                <p>You will be redirected to Stripe&apos;s secure checkout page to complete your payment.</p>
+                            </div>
+
+                            <button
+                                onClick={handleCheckout}
+                                className={styles.payButton}
+                                disabled={isProcessing}
+                            >
+                                {isProcessing ? (
+                                    <>
+                                        <span className={styles.buttonSpinner} />
+                                        Processing...
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                                            <line x1="1" y1="10" x2="23" y2="10" />
+                                        </svg>
+                                        Pay with Stripe
+                                    </>
+                                )}
+                            </button>
+
+                            <div className={styles.securityNote}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                                Secure payment powered by Stripe
+                            </div>
+
+                            <div className={styles.testCards}>
+                                <p className={styles.testCardsTitle}>Test Cards:</p>
+                                <ul>
+                                    <li><code>4242 4242 4242 4242</code> - Success</li>
+                                    <li><code>4000 0000 0000 9995</code> - Declined</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
