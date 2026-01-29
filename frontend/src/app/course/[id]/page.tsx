@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './page.module.css';
 import { Header, Sidebar, ProgressBar, Button, ReviewForm, VideoPlayer } from '@/components';
-import { api, Course, Lesson as ApiLesson } from '@/lib/api';
+import { api, Course, CourseLearningData } from '@/lib/api';
 
 // Frontend Lesson format for Sidebar
 interface Lesson {
@@ -177,110 +177,62 @@ export default function CourseLearningPage() {
       setError('');
 
       try {
-        // Fetch enrolled courses to get course details
-        const coursesResponse = await api.getEnrolledCourses();
+        const response = await api.getCourseLearningData(courseId);
 
-        if (coursesResponse.success && coursesResponse.data) {
-          const foundCourse = coursesResponse.data.find(c => c._id === courseId);
-          if (foundCourse) {
-            setCourse(foundCourse);
-          } else {
-            setError('You are not enrolled in this course');
-            return;
+        if (!response.success || !response.data) {
+          setError(response.message || 'Failed to load course data');
+          setIsLoading(false);
+          return;
+        }
+
+        const { course: courseData, sections, completedLessonIds } = response.data as CourseLearningData;
+
+        setCourse(courseData);
+
+        const completedSet = new Set<string>(completedLessonIds || []);
+        setCompletedLessons(completedSet);
+
+        const modulesWithLessons: Module[] = sections.map((section) => ({
+          id: section._id,
+          title: section.title,
+          lessons: (section.lessons || []).map((lesson) => ({
+            id: lesson._id,
+            title: lesson.title,
+            duration: formatDuration(lesson.duration),
+            status: completedSet.has(lesson._id) ? 'completed' : 'current',
+            videoUrl: lesson.videoUrl,
+          })),
+        }));
+
+        setModules(modulesWithLessons);
+
+        // Set initial lesson (first non-completed lesson with a video URL)
+        let initialLesson: Lesson | undefined;
+        for (const module of modulesWithLessons) {
+          for (const lesson of module.lessons) {
+            if (lesson.videoUrl && !completedSet.has(lesson.id)) {
+              initialLesson = lesson;
+              break;
+            }
+          }
+          if (initialLesson) break;
+        }
+
+        // If all lessons completed, start from first with a video
+        if (!initialLesson) {
+          for (const module of modulesWithLessons) {
+            const firstWithVideo = module.lessons.find((l) => l.videoUrl);
+            if (firstWithVideo) {
+              initialLesson = firstWithVideo;
+              break;
+            }
           }
         }
 
-        // Fetch course sections
-        const sectionsResponse = await api.getCourseSections(courseId);
-
-        if (sectionsResponse.success && sectionsResponse.data && sectionsResponse.data.length > 0) {
-          const sections = sectionsResponse.data;
-          const allCompletedLessons = new Set<string>();
-
-          // Fetch lessons and completed status for each section
-          const modulesWithLessons: Module[] = await Promise.all(
-            sections.map(async (section) => {
-              try {
-                // Fetch lessons
-                const lessonsResponse = await api.getSectionLessons(section._id);
-
-                // Fetch completed lessons for this section
-                const completedResponse = await api.getCompletedLessons(section._id);
-                const sectionCompletedIds = completedResponse.success ? completedResponse.data : [];
-
-                // Add to overall completed set
-                sectionCompletedIds.forEach(id => allCompletedLessons.add(id));
-
-                if (lessonsResponse.success && lessonsResponse.data && lessonsResponse.data.length > 0) {
-                  // Convert API lessons to frontend format
-                  const frontendLessons: Lesson[] = lessonsResponse.data.map((apiLesson) => ({
-                    id: apiLesson._id,
-                    title: apiLesson.title,
-                    duration: formatDuration(apiLesson.duration),
-                    status: sectionCompletedIds.includes(apiLesson._id) ? 'completed' : 'current' as const,
-                    videoUrl: apiLesson.videoUrl,
-                  }));
-
-                  return {
-                    id: section._id,
-                    title: section.title,
-                    lessons: frontendLessons,
-                  };
-                }
-              } catch (err) {
-                console.error(`Failed to fetch lessons for section ${section._id}:`, err);
-              }
-
-              // Return section with placeholder lesson if API fails
-              return {
-                id: section._id,
-                title: section.title,
-                lessons: [
-                  {
-                    id: `${section._id}-placeholder-1`,
-                    title: 'Lesson content loading...',
-                    duration: '-',
-                    status: 'current' as const,
-                    videoUrl: '',
-                  },
-                ],
-              };
-            })
-          );
-
-          setModules(modulesWithLessons);
-          setCompletedLessons(allCompletedLessons);
-
-          // Set initial lesson (first non-completed lesson with a video URL)
-          let initialLessonSet = false;
-          for (const module of modulesWithLessons) {
-            for (const lesson of module.lessons) {
-              if (lesson.videoUrl && !allCompletedLessons.has(lesson.id)) {
-                setCurrentLessonId(lesson.id);
-                setCurrentVideoUrl(lesson.videoUrl);
-                setCurrentLessonTitle(lesson.title);
-                initialLessonSet = true;
-                break;
-              }
-            }
-            if (initialLessonSet) break;
-          }
-
-          // If all lessons completed, start from first
-          if (!initialLessonSet) {
-            for (const module of modulesWithLessons) {
-              const firstLesson = module.lessons.find(l => l.videoUrl);
-              if (firstLesson) {
-                setCurrentLessonId(firstLesson.id);
-                setCurrentVideoUrl(firstLesson.videoUrl || '');
-                setCurrentLessonTitle(firstLesson.title);
-                break;
-              }
-            }
-          }
-        } else {
-          // No sections found
-          setModules([]);
+        if (initialLesson) {
+          setCurrentLessonId(initialLesson.id);
+          setCurrentVideoUrl(initialLesson.videoUrl || '');
+          setCurrentLessonTitle(initialLesson.title);
         }
       } catch (err) {
         console.error('Failed to fetch course data:', err);

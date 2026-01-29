@@ -80,6 +80,14 @@ export default function CartPage() {
     );
   }
 
+  // Precompute subtotal once to avoid repeated work
+  const computedSubtotal =
+    cart?.totalPrice ??
+    (cart?.items || []).reduce(
+      (sum, item) => sum + (item.courseId?.price || item.price || 1),
+      0
+    );
+
   // Empty cart state
   if (!cart || cartCount === 0) {
     return (
@@ -149,7 +157,7 @@ export default function CartPage() {
 
                 <div className={styles.summaryRow}>
                   <span>Subtotal ({cartCount} item{cartCount !== 1 ? 's' : ''})</span>
-                  <span>${(cart.totalPrice || cart.items.reduce((sum, item) => sum + (item.courseId?.price || item.price || 1), 0)).toFixed(2)}</span>
+                <span>${computedSubtotal.toFixed(2)}</span>
                 </div>
 
                 <div className={styles.summaryRow}>
@@ -161,7 +169,7 @@ export default function CartPage() {
 
                 <div className={`${styles.summaryRow} ${styles.totalRow}`}>
                   <span>Total</span>
-                  <span className={styles.totalPrice}>${(cart.totalPrice || cart.items.reduce((sum, item) => sum + (item.courseId?.price || item.price || 1), 0)).toFixed(2)}</span>
+                <span className={styles.totalPrice}>${computedSubtotal.toFixed(2)}</span>
                 </div>
 
                 <button

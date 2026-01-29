@@ -4,15 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
 import { Navbar } from '@/components';
-import { api, Course } from '@/lib/api';
+import { api, CourseWithProgress } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-
-// Extended course with progress info
-interface CourseWithProgress extends Course {
-  progress: number;
-  totalLessons: number;
-  completedLessons: number;
-}
 
 export default function CoursesPage() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
@@ -28,56 +21,9 @@ export default function CoursesPage() {
       }
 
       try {
-        const response = await api.getEnrolledCourses();
+        const response = await api.getEnrolledCoursesWithProgress();
         if (response.success && response.data) {
-          // Fetch progress for each course
-          const coursesWithProgress: CourseWithProgress[] = await Promise.all(
-            response.data.map(async (course) => {
-              let totalLessons = 0;
-              let completedLessons = 0;
-
-              try {
-                // Get sections for this course
-                const sectionsResponse = await api.getCourseSections(course._id);
-
-                if (sectionsResponse.success && sectionsResponse.data) {
-                  // For each section, get lessons and completed count
-                  await Promise.all(
-                    sectionsResponse.data.map(async (section) => {
-                      try {
-                        const lessonsResponse = await api.getSectionLessons(section._id);
-                        if (lessonsResponse.success && lessonsResponse.data) {
-                          totalLessons += lessonsResponse.data.length;
-                        }
-
-                        const completedResponse = await api.getCompletedLessons(section._id);
-                        if (completedResponse.success && completedResponse.data) {
-                          completedLessons += completedResponse.data.length;
-                        }
-                      } catch (err) {
-                        // Silently fail for individual sections
-                      }
-                    })
-                  );
-                }
-              } catch (err) {
-                // Silently fail for course progress
-              }
-
-              const progress = totalLessons > 0
-                ? Math.round((completedLessons / totalLessons) * 100)
-                : 0;
-
-              return {
-                ...course,
-                progress,
-                totalLessons,
-                completedLessons,
-              };
-            })
-          );
-
-          setCourses(coursesWithProgress);
+          setCourses(response.data);
         }
       } catch (error) {
         console.error('Failed to fetch enrolled courses:', error);

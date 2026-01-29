@@ -46,6 +46,13 @@ export interface Course {
   updatedAt?: string;
 }
 
+// Extended course type with progress information (used by /my-courses-with-progress)
+export interface CourseWithProgress extends Course {
+  progress: number;
+  totalLessons: number;
+  completedLessons: number;
+}
+
 // Cart types
 export interface CartItem {
   courseId: Course;
@@ -103,6 +110,21 @@ export interface Lesson {
   order: number;
   createdAt?: string;
   updatedAt?: string;
+}
+
+// Learning data for a course (used by course/[id] page)
+export interface CourseLearningSection {
+  _id: string;
+  courseId: string;
+  title: string;
+  order: number;
+  lessons: Lesson[];
+}
+
+export interface CourseLearningData {
+  course: Course;
+  sections: CourseLearningSection[];
+  completedLessonIds: string[];
 }
 
 // Quiz types
@@ -383,6 +405,47 @@ export const api = {
 
       return await response.json();
     } catch (error) {
+      return {
+        statusCode: 500,
+        data: [],
+        message: 'Failed to fetch enrolled courses',
+        success: false,
+      };
+    }
+  },
+
+  async getEnrolledCoursesWithProgress(): Promise<ApiResponse<CourseWithProgress[]>> {
+    const token = getAccessToken();
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/courses/my-courses-with-progress`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        if (await handleAuthError(response)) {
+          return {
+            statusCode: 401,
+            data: [],
+            message: 'Session expired. Please login again.',
+            success: false,
+          };
+        }
+        return {
+          statusCode: response.status,
+          data: [],
+          message: 'Failed to fetch enrolled courses',
+          success: false,
+        };
+      }
+
+      return await response.json();
+    } catch {
       return {
         statusCode: 500,
         data: [],
@@ -687,6 +750,47 @@ export const api = {
         statusCode: 500,
         data: [],
         message: 'Failed to fetch course sections',
+        success: false,
+      };
+    }
+  },
+
+  async getCourseLearningData(courseId: string): Promise<ApiResponse<CourseLearningData>> {
+    const token = getAccessToken();
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/courses/${courseId}/learning-data`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        if (await handleAuthError(response)) {
+          return {
+            statusCode: 401,
+            data: {} as CourseLearningData,
+            message: 'Session expired. Please login again.',
+            success: false,
+          };
+        }
+        return {
+          statusCode: response.status,
+          data: {} as CourseLearningData,
+          message: 'Failed to fetch course data',
+          success: false,
+        };
+      }
+
+      return await response.json();
+    } catch {
+      return {
+        statusCode: 500,
+        data: {} as CourseLearningData,
+        message: 'Failed to fetch course data',
         success: false,
       };
     }
