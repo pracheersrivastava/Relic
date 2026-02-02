@@ -57,7 +57,7 @@ export const Navbar: React.FC = () => {
       <div className={styles.navContent}>
         <div className={styles.leftSection}>
           <Link href="/" className={styles.logo}>
-            Coursera
+            Taligent Tech
           </Link>
           <Link href="/" className={styles.navLinkAnchor}>
             Explore

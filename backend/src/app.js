@@ -5,7 +5,15 @@ import cookieParser from "cookie-parser";
 const app = express();
 
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003'],
+    origin: [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:3002',
+        'http://localhost:3003',
+        'https://taligent-tech.vercel.app',
+        'https://frontend-rho-rose-56.vercel.app',
+        'https://frontend-4vfd1wbo3-samarth-srivastavas-projects-80396b8e.vercel.app'
+    ],
     credentials: true
 }));
 app.use(express.json({ limit: '8kb' })); //setting JSON limit
@@ -30,6 +38,15 @@ app.use("/api/v1/section", sectionRouter);
 app.use("/api/v1/lessons", lessonRouter);
 app.use("/api/v1/quiz", quizRouter);
 app.use("/api/v1/dashboard", dashboardRouter);
-//http://localhost:5000/api/v1/users/registers
+
+// Health check endpoint
+app.get("/api/v1/health", (req, res) => {
+    res.status(200).json({ status: "ok", message: "Backend is running" });
+});
+
+// Root endpoint
+app.get("/", (req, res) => {
+    res.status(200).json({ status: "ok", message: "Taligent Tech API" });
+});
 
 export { app };

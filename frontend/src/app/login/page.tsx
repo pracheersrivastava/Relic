@@ -67,17 +67,17 @@ function LoginForm() {
   return (
     <div className={styles.loginCard}>
       <div className={styles.loginHeader}>
-        <Link href="/" className={styles.logo}>Coursera</Link>
+        <Link href="/" className={styles.logo}>Taligent Tech</Link>
         <h1 className={styles.title}>
           {isRegister ? 'Create your account' : 'Welcome back'}
         </h1>
         <p className={styles.subtitle}>
-          {isRegister 
-            ? 'Join millions of learners around the world' 
+          {isRegister
+            ? 'Join millions of learners around the world'
             : 'Log in to continue your learning journey'}
         </p>
       </div>
-      
+
       <form className={styles.loginForm} onSubmit={handleSubmit}>
         {isRegister && (
           <Input
@@ -105,28 +105,28 @@ function LoginForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        
+
         {error && (
           <div className={styles.error}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="8" x2="12" y2="12"/>
-              <line x1="12" y1="16" x2="12.01" y2="16"/>
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
             {error}
           </div>
         )}
-        
+
         {success && (
           <div className={styles.success}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-              <polyline points="22 4 12 14.01 9 11.01"/>
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
             {success}
           </div>
         )}
-        
+
         <Button type="submit" fullWidth disabled={loading}>
           {loading ? (
             <>
@@ -138,13 +138,13 @@ function LoginForm() {
           )}
         </Button>
       </form>
-      
+
       <div className={styles.switchAuth}>
-        <button 
-          type="button" 
-          onClick={() => { 
+        <button
+          type="button"
+          onClick={() => {
             const newMode = !isRegister;
-            setIsRegister(newMode); 
+            setIsRegister(newMode);
             setError('');
             setSuccess('');
             window.history.replaceState(null, '', newMode ? '/login?register=true' : '/login');
@@ -164,13 +164,13 @@ export default function LoginPage() {
       <div className={styles.topBar}>
         <Link href="/" className={styles.backLink}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
+            <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
           Back to Home
         </Link>
         <ThemeToggle />
       </div>
-      
+
       <Suspense fallback={
         <div className={styles.loginCard}>
           <div className={styles.loadingContainer}>
@@ -180,7 +180,7 @@ export default function LoginPage() {
       }>
         <LoginForm />
       </Suspense>
-      
+
       <div className={styles.footer}>
         <p>By continuing, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
       </div>

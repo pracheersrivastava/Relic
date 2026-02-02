@@ -2,12 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { cookies } from 'next/headers';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 export async function POST(request: NextRequest) {
     try {
+        // Initialize Stripe lazily to avoid build-time errors
+        if (!process.env.STRIPE_SECRET_KEY) {
+            return NextResponse.json(
+                { error: 'Stripe is not configured' },
+                { status: 500 }
+            );
+        }
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
         const { sessionId } = await request.json();
 
         if (!sessionId) {

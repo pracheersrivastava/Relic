@@ -24,7 +24,7 @@ export function Header() {
     <>
       <header className={styles.header}>
         <Link href="/courses" className={styles.logo}>
-          Coursera
+          Taligent Tech
         </Link>
         <div className={styles.headerRight}>
           <ThemeToggle />
