@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { cookies } from 'next/headers';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api/v1';
 
@@ -15,7 +14,7 @@ export async function POST(request: NextRequest) {
         }
         const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-        const { sessionId } = await request.json();
+        const { sessionId, accessToken } = await request.json();
 
         if (!sessionId) {
             return NextResponse.json(
@@ -34,11 +33,10 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Get access token from cookies
-        const cookieStore = await cookies();
-        const accessToken = cookieStore.get('accessToken')?.value;
+        // Get access token from request body or session metadata
+        const token = accessToken || session.metadata?.accessToken;
 
-        if (!accessToken) {
+        if (!token) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
                 { status: 401 }
@@ -49,7 +47,7 @@ export async function POST(request: NextRequest) {
         const enrollResponse = await fetch(`${API_BASE_URL}/cart/pay`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${accessToken}`,
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
         });

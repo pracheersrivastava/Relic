@@ -23,13 +23,16 @@ function SuccessContent() {
             }
 
             try {
+                // Get access token from localStorage
+                const accessToken = localStorage.getItem('accessToken');
+
                 // Call backend to confirm payment and create enrollments
                 const response = await fetch('/api/checkout/confirm', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ sessionId }),
+                    body: JSON.stringify({ sessionId, accessToken }),
                 });
 
                 if (response.ok) {

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { cookies } from 'next/headers';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api/v1';
 
@@ -15,9 +14,9 @@ export async function POST(request: NextRequest) {
         }
         const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-        // Get access token from cookies
-        const cookieStore = await cookies();
-        const accessToken = cookieStore.get('accessToken')?.value;
+        // Get access token from request body
+        const body = await request.json();
+        const accessToken = body.accessToken;
 
         if (!accessToken) {
             return NextResponse.json(
