@@ -9,10 +9,7 @@ app.use(cors({
         'http://localhost:3000',
         'http://localhost:3001',
         'http://localhost:3002',
-        'http://localhost:3003',
-        'https://taligent-tech.vercel.app',
-        'https://frontend-rho-rose-56.vercel.app',
-        'https://frontend-4vfd1wbo3-samarth-srivastavas-projects-80396b8e.vercel.app'
+        'http://localhost:3003'
     ],
     credentials: true
 }));

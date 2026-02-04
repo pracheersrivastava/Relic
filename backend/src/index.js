@@ -28,15 +28,12 @@ app.on("error", (error) => {
     throw error;
 });
 
-// For local development - start HTTP server
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-    getDbConnection().then(() => {
-        const PORT = process.env.PORT || 8000;
-        app.listen(PORT, () => {
-            console.log(`Server is running at port: ${PORT}`);
-        });
+// Start HTTP server
+getDbConnection().then(() => {
+    const PORT = process.env.PORT || 8000;
+    app.listen(PORT, () => {
+        console.log(`Server is running at port: ${PORT}`);
     });
-}
+});
 
-// Export for Vercel serverless
 export default app;
