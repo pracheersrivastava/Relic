@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import connectDB from './db/DB.connect.js';
 import { app } from './app.js';
+import { startCronJob } from "./services/cron.service.js";
 
 dotenv.config({
     path: "./.env"
@@ -33,6 +34,7 @@ getDbConnection().then(() => {
     const PORT = process.env.PORT || 8000;
     app.listen(PORT, () => {
         console.log(`Server is running at port: ${PORT}`);
+        startCronJob();
     });
 });
 
