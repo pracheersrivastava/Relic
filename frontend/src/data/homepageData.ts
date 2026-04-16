@@ -26,16 +26,16 @@ export interface Banner {
 export const banners: Banner[] = [
   {
     id: 'banner-1',
-    title: 'Taligent Tech Plus',
+    title: 'Relic Plus',
     subtitle: 'Next level skills. New Year savings.',
     description: 'Get all the skills for one low price with 10,000+ top courses from Microsoft, Google, IBM, and more.',
-    ctaText: 'Save on Taligent Tech Plus',
+    ctaText: 'Save on Relic Plus',
     bgColor: '#0056D2',
     textColor: '#FFFFFF',
   },
   {
     id: 'banner-2',
-    title: 'Taligent Tech for Teams',
+    title: 'Relic for Teams',
     subtitle: 'Train your team in top skills',
     description: 'Join 3,700+ teams worldwide and get 50% off team training.',
     ctaText: 'Save 50% on Teams',

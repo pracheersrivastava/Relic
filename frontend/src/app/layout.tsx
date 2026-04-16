@@ -3,7 +3,7 @@ import '@/styles/globals.css';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'Taligent Tech - Learn without limits',
+  title: 'Relic - Learn without limits',
   description: 'Access world-class education from top universities and companies.',
 };
 

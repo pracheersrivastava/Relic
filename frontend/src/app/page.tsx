@@ -37,7 +37,7 @@ const formatReviewCount = (count: number): string => {
 const convertToHomepageCourse = (course: Course, index: number): HomepageCourse => ({
   id: course._id,
   title: course.title,
-  provider: 'Taligent Tech',
+  provider: 'Relic',
   providerLogo: 'C',
   image: courseImages[index % courseImages.length],
   rating: course.averageRating || 0,
@@ -228,14 +228,14 @@ export default function HomePage() {
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
           <div className={styles.footerBrand}>
-            <span className={styles.footerLogo}>Taligent Tech</span>
+            <span className={styles.footerLogo}>Relic</span>
             <p className={styles.footerTagline}>
               Learn without limits
             </p>
           </div>
           <div className={styles.footerLinks}>
             <div className={styles.footerColumn}>
-              <h4>Taligent Tech</h4>
+              <h4>Relic</h4>
               <a href="#">About</a>
               <a href="#">Careers</a>
               <a href="#">Catalog</a>
@@ -255,7 +255,7 @@ export default function HomePage() {
           </div>
         </div>
         <div className={styles.footerBottom}>
-          <p>© 2026 Taligent Tech. All rights reserved.</p>
+          <p>© 2026 Relic. All rights reserved.</p>
         </div>
       </footer>
     </div>

@@ -67,7 +67,7 @@ function LoginForm() {
   return (
     <div className={styles.loginCard}>
       <div className={styles.loginHeader}>
-        <Link href="/" className={styles.logo}>Taligent Tech</Link>
+        <Link href="/" className={styles.logo}>Relic</Link>
         <h1 className={styles.title}>
           {isRegister ? 'Create your account' : 'Welcome back'}
         </h1>

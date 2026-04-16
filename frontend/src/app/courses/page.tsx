@@ -160,7 +160,7 @@ export default function CoursesPage() {
                   <div className={styles.courseContent}>
                     <div className={styles.courseProvider}>
                       <span className={styles.providerBadge}>C</span>
-                      <span className={styles.providerName}>Taligent Tech</span>
+                      <span className={styles.providerName}>Relic</span>
                     </div>
                     <h3 className={styles.courseTitle}>{course.title}</h3>
                     {course.subtitle && (
