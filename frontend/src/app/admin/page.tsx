@@ -57,7 +57,6 @@ export default function AdminDashboard() {
     const animatedUsers = useAnimatedCounter(stats?.totalUsers || 0);
     const animatedCourses = useAnimatedCounter(stats?.totalCourses || 0);
     const animatedOrders = useAnimatedCounter(stats?.totalOrders || 0);
-    const animatedQuizAttempts = useAnimatedCounter(stats?.totalQuizAtempts || 0);
     const animatedRevenue = useAnimatedCounter(stats?.totalRevenue || 0);
 
     const fetchStats = useCallback(async () => {
@@ -234,21 +233,6 @@ export default function AdminDashboard() {
                         <div className={styles.statContent}>
                             <span className={styles.statValue}>{animatedOrders.toLocaleString()}</span>
                             <span className={styles.statLabel}>Total Orders</span>
-                        </div>
-                        <div className={styles.statGlow} />
-                    </div>
-
-                    {/* Quiz Attempts Card */}
-                    <div className={`${styles.statCard} ${styles.quizCard}`}>
-                        <div className={styles.statIcon}>
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M9 11l3 3L22 4" />
-                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-                            </svg>
-                        </div>
-                        <div className={styles.statContent}>
-                            <span className={styles.statValue}>{animatedQuizAttempts.toLocaleString()}</span>
-                            <span className={styles.statLabel}>Quiz Attempts</span>
                         </div>
                         <div className={styles.statGlow} />
                     </div>

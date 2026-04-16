@@ -29,7 +29,6 @@ export interface DashboardStats {
   totalUsers: number;
   totalCourses: number;
   totalOrders: number;
-  totalQuizAtempts: number;
   totalRevenue: number;
 }
 
@@ -125,53 +124,6 @@ export interface CourseLearningData {
   course: Course;
   sections: CourseLearningSection[];
   completedLessonIds: string[];
-}
-
-// Quiz types
-export interface QuizOption {
-  text: string;
-  isCorrect?: boolean;
-}
-
-export interface QuizQuestion {
-  _id: string;
-  question: string;
-  options: QuizOption[];
-  explanation?: string;
-  category?: string;
-}
-
-export interface Quiz {
-  _id: string;
-  title: string;
-  category: string;
-  passingScore: number;
-  timeLimit?: number;
-}
-
-export interface QuizResult {
-  score: number;
-  passed: boolean;
-  correct: number;
-  total: number;
-  saved?: boolean;
-}
-
-export interface QuizAnswer {
-  questionId: string;
-  selectedOptionIndex: number;
-}
-
-export interface QuizAttempt {
-  _id: string;
-  userId: string;
-  quizId: string;
-  score: number;
-  passed: boolean;
-  percentage: number;
-  answers: QuizAnswer[];
-  createdAt: string;
-  updatedAt: string;
 }
 
 // Store tokens
@@ -1297,131 +1249,6 @@ export const api = {
         statusCode: 500,
         data: {} as Order,
         message: 'Payment confirmation failed',
-        success: false,
-      };
-    }
-  },
-
-  // Quiz endpoints
-  async getQuiz(quizId: string): Promise<ApiResponse<{ quiz: Quiz; questions: QuizQuestion[] }>> {
-    try {
-      const response = await fetch(`${API_BASE_URL}/quiz/quizzes/${quizId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        const errorMessages: Record<number, string> = {
-          400: 'Not enough questions in quiz',
-          404: 'Quiz not found',
-        };
-
-        return {
-          statusCode: response.status,
-          data: { quiz: {} as Quiz, questions: [] },
-          message: errorMessages[response.status] || 'Failed to fetch quiz',
-          success: false,
-        };
-      }
-
-      return await response.json();
-    } catch (error) {
-      return {
-        statusCode: 500,
-        data: { quiz: {} as Quiz, questions: [] },
-        message: 'Failed to fetch quiz',
-        success: false,
-      };
-    }
-  },
-
-  async submitQuiz(quizId: string, answers: QuizAnswer[]): Promise<ApiResponse<QuizResult>> {
-    const token = getAccessToken();
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/quiz/quizzes/${quizId}/submit`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` }),
-        },
-        credentials: 'include',
-        body: JSON.stringify({ answers }),
-      });
-
-      if (!response.ok) {
-        const errorMessages: Record<number, string> = {
-          400: 'Invalid answers submitted',
-          404: 'Quiz not found',
-        };
-
-        return {
-          statusCode: response.status,
-          data: {} as QuizResult,
-          message: errorMessages[response.status] || 'Failed to submit quiz',
-          success: false,
-        };
-      }
-
-      return await response.json();
-    } catch (error) {
-      return {
-        statusCode: 500,
-        data: {} as QuizResult,
-        message: 'Failed to submit quiz',
-        success: false,
-      };
-    }
-  },
-
-  // Get user's previous quiz attempt
-  async getMyQuizResult(quizId: string): Promise<ApiResponse<QuizAttempt>> {
-    try {
-      const token = getAccessToken();
-      if (!token) {
-        return {
-          statusCode: 401,
-          data: {} as QuizAttempt,
-          message: 'Login required',
-          success: false,
-        };
-      }
-
-      const response = await fetch(`${API_BASE_URL}/quiz/quizzes/${quizId}/result`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        // Check for auth errors (expired token, etc.) and redirect if needed
-        if (response.status === 401) {
-          await handleAuthError(response);
-          return {
-            statusCode: 401,
-            data: {} as QuizAttempt,
-            message: 'Session expired. Please login again.',
-            success: false,
-          };
-        }
-        return {
-          statusCode: response.status,
-          data: {} as QuizAttempt,
-          message: response.status === 404 ? 'No previous attempt found' : 'Failed to fetch quiz result',
-          success: false,
-        };
-      }
-
-      return await response.json();
-    } catch (error) {
-      return {
-        statusCode: 500,
-        data: {} as QuizAttempt,
-        message: 'Failed to fetch quiz result',
         success: false,
       };
     }

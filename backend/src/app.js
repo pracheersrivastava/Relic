@@ -25,7 +25,6 @@ import courseRouter from "./routes/courses.routes.js";
 import cartRouter from "./routes/cart.routes.js";
 import sectionRouter from "./routes/section.routes.js";
 import lessonRouter from "./routes/lessson.routes.js";
-import quizRouter from "./routes/quiz.routes.js";
 import dashboardRouter from "./routes/dashboardboard.routes.js";
 
 app.use("/api/v1/users", userRouter);
@@ -33,7 +32,6 @@ app.use("/api/v1/courses", courseRouter);
 app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/section", sectionRouter);
 app.use("/api/v1/lessons", lessonRouter);
-app.use("/api/v1/quiz", quizRouter);
 app.use("/api/v1/dashboard", dashboardRouter);
 
 // Health check endpoint

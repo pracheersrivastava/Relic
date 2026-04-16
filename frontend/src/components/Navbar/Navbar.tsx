@@ -67,9 +67,6 @@ export const Navbar: React.FC = () => {
               <Link href="/courses" className={styles.navLinkAnchor}>
                 My Learning
               </Link>
-              <Link href="/quiz" className={styles.navLinkAnchor}>
-                Quiz Results
-              </Link>
             </>
           )}
         </div>

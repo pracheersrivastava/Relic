@@ -19,12 +19,6 @@ const progressSchema = new Schema(
         ref: "Lesson"
       }
     ],
-    completedQuizzes: [
-      {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: "Quiz"
-      }
-    ],
     completionPercentage: {
       type: Number,
       default: 0

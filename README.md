@@ -67,8 +67,6 @@ Runs on http://localhost:3000
 | `/courses` | My Learning - enrolled courses |
 | `/cart` | Shopping cart with checkout |
 | `/course/[id]` | Course player with video, sections sidebar, and review form |
-| `/quiz` | Quiz listing page with CDL practice tests |
-| `/quiz/[id]` | Interactive quiz with timer, instant feedback, and results |
 
 ## Features
 
@@ -86,12 +84,9 @@ Runs on http://localhost:3000
 
 ## Recent Updates
 
-- **Admin Dashboard**: Role-based admin panel (`/admin`) with real-time stats (users, courses, orders, quiz attempts, revenue), animated counters, and premium UI
+- **Admin Dashboard**: Role-based admin panel (`/admin`) with real-time stats (users, courses, orders, revenue), animated counters, and premium UI
 - **Stripe Payment Integration**: Full Stripe Checkout flow with hosted payment page, success/cancel redirects, and automatic course enrollment
 - **Role-Based Access Control**: User roles (admin/user), `isAdmin` in AuthContext, admin-only Navbar link
-- **Interactive Quiz Feature**: CDL practice tests with countdown timer, instant answer feedback (correct/wrong with explanations), animated UI, and score visualization
-- **Quiz Results Tracking**: Logged-in users' quiz attempts are saved and displayed on quiz start screen
-- **Homepage Quiz Widget**: Practice Test card on homepage for quick access to quizzes
 - **Video Player**: Custom YouTube player with controls, keyboard shortcuts, and "Next Lesson" auto-advance popup
 - **Welcome Widget**: Personalized homepage widget tracking last watched course and progress
 - **Lesson Progress**: Backend tracking of completed lessons and video progress
@@ -138,13 +133,6 @@ Runs on http://localhost:3000
 | DELETE | `/api/v1/cart/remove/:courseId` | Yes | Remove course from cart |
 | POST | `/api/v1/cart/pay` | Yes | Complete purchase and create enrollments |
 | DELETE | `/api/v1/cart/clear` | Yes | Clear cart |
-
-### Quiz
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/api/v1/quiz/quizzes/:quizId` | No | Get quiz with random questions |
-| POST | `/api/v1/quiz/quizzes/:quizId/submit` | Optional | Submit quiz answers and get score |
-| GET | `/api/v1/quiz/quizzes/:quizId/result` | Yes | Get user's previous quiz attempt |
 
 ### Admin Dashboard
 | Method | Endpoint | Auth | Description |
