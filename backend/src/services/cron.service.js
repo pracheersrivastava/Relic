@@ -2,10 +2,14 @@ import cron from "node-cron";
 import axios from "axios";
 
 export const startCronJob = () => {
+  if (!process.env.BACKEND_URL) {
+    console.warn("Skipping cron job startup: BACKEND_URL is not configured.");
+    return;
+  }
+
   // Schedule a job to run every 14 minutes
   cron.schedule("*/14 * * * *", async () => {
     try {
-      // Replace with your backend URL
       const response = await axios.get(
         `${process.env.BACKEND_URL}/api/v1/health`
       );
