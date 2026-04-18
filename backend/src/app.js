@@ -42,7 +42,19 @@ app.get("/api/v1/health", (req, res) => {
 
 // Root endpoint
 app.get("/", (req, res) => {
-    res.status(200).json({ status: "ok", message: "Taligent Tech API" });
+    res.status(200).json({ status: "ok", message: "Relic API" });
+});
+
+app.use((err, req, res, next) => {
+    const statusCode = err?.statusCode || 500;
+
+    res.status(statusCode).json({
+        statusCode,
+        data: null,
+        message: err?.message || "Internal server error",
+        success: false,
+        errors: err?.errors || [],
+    });
 });
 
 export { app };

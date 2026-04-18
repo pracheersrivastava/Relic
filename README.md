@@ -1,6 +1,6 @@
-# Coursera Clone
+# Relic
 
-A full-stack learning platform built with Next.js 14, Express.js, and MongoDB.
+A learning platform built with Next.js 14, Express.js, and MongoDB.
 
 ## Tech Stack
 
@@ -19,7 +19,7 @@ A full-stack learning platform built with Next.js 14, Express.js, and MongoDB.
 ## Project Structure
 
 ```
-CourseEra_Clone/
+Relic/
 ├── frontend/             # Next.js frontend
 │   └── src/
 │       ├── app/          # Pages (homepage, login, courses, cart, course player)
@@ -85,7 +85,6 @@ Runs on http://localhost:3000
 ## Recent Updates
 
 - **Admin Dashboard**: Role-based admin panel (`/admin`) with real-time stats (users, courses, orders, revenue), animated counters, and premium UI
-- **Stripe Payment Integration**: Full Stripe Checkout flow with hosted payment page, success/cancel redirects, and automatic course enrollment
 - **Role-Based Access Control**: User roles (admin/user), `isAdmin` in AuthContext, admin-only Navbar link
 - **Video Player**: Custom YouTube player with controls, keyboard shortcuts, and "Next Lesson" auto-advance popup
 - **Welcome Widget**: Personalized homepage widget tracking last watched course and progress
@@ -125,7 +124,7 @@ Runs on http://localhost:3000
 | GET | `/api/v1/section/courses/:courseId/sections` | No | Get all sections for a course |
 | GET | `/api/v1/section/sections/:sectionId` | No | Get a specific section |
 
-### Cart & Payment
+### Cart
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
 | GET | `/api/v1/cart` | Yes | Get user's cart |

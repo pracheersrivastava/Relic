@@ -6,8 +6,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
-    "seed": "node src/scripts/seedQuizQuestions.js"
+    "dev": "nodemon src/index.js"
   },
   "keywords": [
     "javascript",
@@ -35,7 +34,6 @@
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
     "routes": "^2.1.0",
-    "stripe": "^20.2.0",
     "typescript": "^5.9.3"
   }
 }

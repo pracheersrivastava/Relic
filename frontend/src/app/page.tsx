@@ -131,9 +131,7 @@ export default function HomePage() {
                 <h2 className={styles.sectionMainTitle}>Available Courses</h2>
                 <p className={styles.sectionSubtitle}>Start learning today with these courses</p>
               </div>
-              <Link href="/explore" className={styles.viewAllLink}>
-                Browse all
-              </Link>
+              <span className={styles.viewAllLink}>Featured catalog</span>
             </div>
             <div className={styles.courseGrid}>
               {backendCourses.slice(0, 8).map((course) => (
