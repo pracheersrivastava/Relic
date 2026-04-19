@@ -45,7 +45,7 @@
 .input:focus {
   border-color: var(--color-primary);
   outline: none;
-  box-shadow: 0 0 0 4px var(--color-primary-light, rgba(0, 86, 210, 0.1));
+  box-shadow: 0 0 0 4px var(--color-primary-light, rgba(210, 31, 60, 0.1));
 }
 
 .input:disabled {

@@ -2,11 +2,11 @@
 
 /* Design System Tokens - Coursera Inspired Premium */
 :root {
-  /* Primary Colors - Coursera Blue */
-  --color-primary: #0056D2;
-  --color-primary-hover: #003E9C;
-  --color-primary-light: #E8F1FC;
-  --color-primary-dark: #002B6B;
+  /* Primary Colors - Red Palette */
+  --color-primary: #D21F3C;
+  --color-primary-hover: #9C1428;
+  --color-primary-light: #FCE8EC;
+  --color-primary-dark: #6B0F1E;
   
   /* Accent Colors */
   --color-accent: #00A86B;
@@ -91,7 +91,7 @@
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
   --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16);
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-card-hover: 0 12px 32px rgba(0, 86, 210, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-card-hover: 0 12px 32px rgba(210, 31, 60, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
 
   /* Transitions */
   --transition-fast: 0.15s ease;
@@ -102,10 +102,10 @@
 
 /* Dark Mode Colors */
 [data-theme="dark"] {
-  --color-primary: #2D8CFF;
-  --color-primary-hover: #5AA3FF;
-  --color-primary-light: #1A2D47;
-  --color-primary-dark: #1565C0;
+  --color-primary: #FF4D6A;
+  --color-primary-hover: #FF7A91;
+  --color-primary-light: #471A22;
+  --color-primary-dark: #C01530;
   
   --color-accent: #00D68F;
   --color-accent-light: #0D3D2E;
@@ -133,7 +133,7 @@
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
   --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.7);
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 1px rgba(255, 255, 255, 0.05);
-  --shadow-card-hover: 0 12px 32px rgba(45, 140, 255, 0.2), 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 12px 32px rgba(255, 77, 106, 0.2), 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Reset and Base Styles */

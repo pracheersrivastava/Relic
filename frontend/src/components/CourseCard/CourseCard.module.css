@@ -76,9 +76,9 @@
 }
 
 .statusBadge.inProgress {
-  background: linear-gradient(135deg, var(--color-primary) 0%, #003E9C 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #9C1428 100%);
   color: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(0, 86, 210, 0.25);
+  box-shadow: 0 2px 8px rgba(210, 31, 60, 0.25);
 }
 
 .statusBadge.notStarted {

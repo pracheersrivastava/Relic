@@ -6,7 +6,7 @@
   justify-content: center;
   padding: var(--spacing-xl) var(--spacing-md);
   position: relative;
-  background: linear-gradient(135deg, rgba(0, 86, 210, 0.03) 0%, rgba(0, 168, 107, 0.03) 100%);
+  background: linear-gradient(135deg, rgba(210, 31, 60, 0.03) 0%, rgba(0, 168, 107, 0.03) 100%);
 }
 
 .loginPage::before {
@@ -47,7 +47,7 @@
 
 .backLink:hover {
   color: var(--color-primary);
-  background-color: var(--color-primary-light, rgba(0, 86, 210, 0.08));
+  background-color: var(--color-primary-light, rgba(210, 31, 60, 0.08));
   transform: translateX(-4px);
 }
 
@@ -58,7 +58,7 @@
   border: 1px solid var(--color-border-light, var(--color-border));
   border-radius: 20px;
   padding: var(--spacing-2xl);
-  box-shadow: 0 20px 60px rgba(0, 86, 210, 0.1), 0 8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 20px 60px rgba(210, 31, 60, 0.1), 0 8px 24px rgba(0, 0, 0, 0.06);
   position: relative;
   z-index: 1;
 }
@@ -84,7 +84,7 @@
   display: inline-block;
   font-size: 32px;
   font-weight: var(--font-weight-bold);
-  background: linear-gradient(135deg, var(--color-primary) 0%, #003E9C 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #9C1428 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -222,9 +222,9 @@
 
 .socialButton:hover {
   border-color: var(--color-primary);
-  background-color: var(--color-primary-light, rgba(0, 86, 210, 0.04));
+  background-color: var(--color-primary-light, rgba(210, 31, 60, 0.04));
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 86, 210, 0.1);
+  box-shadow: 0 4px 12px rgba(210, 31, 60, 0.1);
 }
 
 .switchAuth {
@@ -288,7 +288,7 @@
 
 /* Dark mode */
 [data-theme="dark"] .loginPage {
-  background: linear-gradient(135deg, rgba(45, 140, 255, 0.03) 0%, rgba(0, 214, 143, 0.03) 100%);
+  background: linear-gradient(135deg, rgba(255, 77, 106, 0.03) 0%, rgba(0, 214, 143, 0.03) 100%);
 }
 
 [data-theme="dark"] .loginPage::before {

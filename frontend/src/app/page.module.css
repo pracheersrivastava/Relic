@@ -46,18 +46,18 @@
 
 .partnerBadge:hover {
   color: var(--color-primary);
-  background: var(--color-primary-light, rgba(0, 86, 210, 0.08));
+  background: var(--color-primary-light, rgba(210, 31, 60, 0.08));
   transform: translateY(-2px);
 }
 
 .partnerLogo {
   font-size: 14px;
   font-weight: var(--font-weight-bold);
-  background: linear-gradient(135deg, var(--color-primary) 0%, #003E9C 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #9C1428 100%);
   color: white;
   padding: 6px 10px;
   border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 86, 210, 0.2);
+  box-shadow: 0 2px 8px rgba(210, 31, 60, 0.2);
 }
 
 .partnerName {
@@ -105,7 +105,7 @@
 }
 
 .viewAllLink:hover {
-  background-color: var(--color-primary-light, rgba(0, 86, 210, 0.08));
+  background-color: var(--color-primary-light, rgba(210, 31, 60, 0.08));
 }
 
 .viewAllLink:hover::after {
@@ -143,7 +143,7 @@
 
 .courseCardNew:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 50px rgba(0, 86, 210, 0.15), 0 8px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 50px rgba(210, 31, 60, 0.15), 0 8px 16px rgba(0, 0, 0, 0.08);
   border-color: var(--color-primary);
 }
 
@@ -153,7 +153,7 @@
 
 .courseCardImage {
   height: 160px;
-  background: linear-gradient(135deg, var(--color-primary) 0%, #002B6B 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #6B0F1E 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -285,7 +285,7 @@
 .courseCardViewBtn {
   flex: 1;
   padding: 14px var(--spacing-md);
-  background: linear-gradient(135deg, var(--color-primary) 0%, #003E9C 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #9C1428 100%);
   color: white;
   font-size: var(--font-size-label);
   font-weight: var(--font-weight-semibold);
@@ -293,13 +293,13 @@
   border-radius: 8px;
   text-decoration: none;
   transition: all var(--transition-normal);
-  box-shadow: 0 4px 12px rgba(0, 86, 210, 0.25);
+  box-shadow: 0 4px 12px rgba(210, 31, 60, 0.25);
 }
 
 .courseCardViewBtn:hover {
-  background: linear-gradient(135deg, #003E9C 0%, #002B6B 100%);
+  background: linear-gradient(135deg, #9C1428 0%, #6B0F1E 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 86, 210, 0.35);
+  box-shadow: 0 6px 20px rgba(210, 31, 60, 0.35);
 }
 
 .courseCardViewBtn:active {
@@ -323,7 +323,7 @@
 .courseCardCartBtn:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
-  background-color: var(--color-primary-light, rgba(0, 86, 210, 0.08));
+  background-color: var(--color-primary-light, rgba(210, 31, 60, 0.08));
   transform: scale(1.05);
 }
 
@@ -433,7 +433,7 @@
 .footerLogo {
   font-size: 26px;
   font-weight: var(--font-weight-bold);
-  background: linear-gradient(135deg, var(--color-primary) 0%, #003E9C 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #9C1428 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -580,14 +580,14 @@
 }
 
 [data-theme="dark"] .courseCardNew:hover {
-  box-shadow: 0 20px 50px rgba(45, 140, 255, 0.2), 0 8px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 50px rgba(255, 77, 106, 0.2), 0 8px 16px rgba(0, 0, 0, 0.4);
 }
 
 [data-theme="dark"] .courseCardViewBtn {
-  box-shadow: 0 4px 12px rgba(45, 140, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 77, 106, 0.3);
 }
 
 [data-theme="dark"] .courseCardViewBtn:hover {
-  box-shadow: 0 6px 20px rgba(45, 140, 255, 0.4);
+  box-shadow: 0 6px 20px rgba(255, 77, 106, 0.4);
 }
 

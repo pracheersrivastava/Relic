@@ -55,11 +55,11 @@
 }
 
 .arrowButton:hover {
-  background: linear-gradient(135deg, var(--color-primary) 0%, #003E9C 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #9C1428 100%);
   border-color: var(--color-primary);
   color: white;
   transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 86, 210, 0.35);
+  box-shadow: 0 6px 20px rgba(210, 31, 60, 0.35);
 }
 
 .arrowButton:active {
@@ -94,7 +94,7 @@
 }
 
 .viewAllButton:hover {
-  background-color: var(--color-primary-light, rgba(0, 86, 210, 0.08));
+  background-color: var(--color-primary-light, rgba(210, 31, 60, 0.08));
 }
 
 .viewAllButton:hover::after {
@@ -219,5 +219,5 @@
 
 /* Dark mode enhancements */
 [data-theme="dark"] .arrowButton:hover {
-  box-shadow: 0 6px 20px rgba(45, 140, 255, 0.4);
+  box-shadow: 0 6px 20px rgba(255, 77, 106, 0.4);
 }

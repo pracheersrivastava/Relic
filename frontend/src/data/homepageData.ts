@@ -30,7 +30,7 @@ export const banners: Banner[] = [
     subtitle: 'Next level skills. New Year savings.',
     description: 'Get all the skills for one low price with 10,000+ top courses from Microsoft, Google, IBM, and more.',
     ctaText: 'Save on Relic Plus',
-    bgColor: '#0056D2',
+    bgColor: '#D21F3C',
     textColor: '#FFFFFF',
   },
   {

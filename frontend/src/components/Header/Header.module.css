@@ -21,7 +21,7 @@
   font-size: 24px;
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-section-header);
-  background: linear-gradient(135deg, var(--color-primary) 0%, #003E9C 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #9C1428 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -57,7 +57,7 @@
 .settingsButton:hover {
   color: var(--color-primary);
   border-color: var(--color-primary);
-  background: var(--color-primary-light, rgba(0, 86, 210, 0.08));
+  background: var(--color-primary-light, rgba(210, 31, 60, 0.08));
 }
 
 .logoutButton {
@@ -75,7 +75,7 @@
 .logoutButton:hover {
   color: var(--color-primary);
   border-color: var(--color-primary);
-  background: var(--color-primary-light, rgba(0, 86, 210, 0.08));
+  background: var(--color-primary-light, rgba(210, 31, 60, 0.08));
 }
 
 .logoutButton:active {

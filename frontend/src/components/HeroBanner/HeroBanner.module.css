@@ -226,8 +226,8 @@
 }
 
 .indicator.active {
-  background: linear-gradient(135deg, var(--color-primary) 0%, #003E9C 100%);
-  box-shadow: 0 2px 8px rgba(0, 86, 210, 0.4);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #9C1428 100%);
+  box-shadow: 0 2px 8px rgba(210, 31, 60, 0.4);
 }
 
 .indicator.active::after {

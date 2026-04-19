@@ -112,7 +112,7 @@
 }
 
 .lesson.active {
-  background-color: var(--color-primary-light, rgba(0, 86, 210, 0.08));
+  background-color: var(--color-primary-light, rgba(210, 31, 60, 0.08));
   border-left-color: var(--color-primary);
 }
 

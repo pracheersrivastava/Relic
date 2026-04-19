@@ -199,7 +199,7 @@
 }
 
 .startNextButton:hover {
-  background-color: #0045a8;
+  background-color: #a8152f;
 }
 
 .pauseButton {
@@ -313,7 +313,7 @@
 
 .progressFilled {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-primary) 0%, #2d8cff 100%);
+  background: linear-gradient(90deg, var(--color-primary) 0%, #FF4D6A 100%);
   border-radius: 3px;
   position: relative;
   transition: width 0.1s linear;
