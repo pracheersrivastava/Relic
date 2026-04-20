@@ -161,7 +161,7 @@ export default function HomePage() {
                       <span className={styles.courseCardPriceValue}>${course.price || 1}</span>
                     </div>
                     <div className={styles.courseCardActions}>
-                      <Link href={`/course/${course.id}`} className={styles.courseCardViewBtn}>
+                      <Link href={`/courses/${course.id}`} className={styles.courseCardViewBtn}>
                         View Details
                       </Link>
                       <button
