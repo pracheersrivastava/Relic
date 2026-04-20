@@ -9,13 +9,12 @@ app.use(cors({
         'http://localhost:3000',
         'http://localhost:3001',
         'http://localhost:3002',
-        'http://localhost:3003',
-        'https://taligenttech.vercel.app'
+        'http://localhost:3003'
     ],
     credentials: true
 }));
-app.use(express.json({ limit: '8kb' })); //setting JSON limit
-app.use(express.urlencoded({ extended: true, limit: "8kb" }));
+app.use(express.json({ limit: '64kb' })); //setting JSON limit
+app.use(express.urlencoded({ extended: true, limit: "64kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
