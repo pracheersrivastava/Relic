@@ -1,8 +1,21 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import rateLimit from 'express-rate-limit';
+import userRouter from "./routes/user.routes.js";
+import courseRouter from "./routes/courses.routes.js";
+import cartRouter from "./routes/cart.routes.js";
+import sectionRouter from "./routes/section.routes.js";
+import lessonRouter from "./routes/lessson.routes.js";
+import dashboardRouter from "./routes/dashboardboard.routes.js";
 
 const app = express();
+
+const limiter = rateLimit({
+    windowMs: 60 * 1000,
+    limit: 10,
+    standardHeaders: 'draft-8',
+})
 
 app.use(cors({
     origin: [
@@ -17,15 +30,8 @@ app.use(express.json({ limit: '64kb' })); //setting JSON limit
 app.use(express.urlencoded({ extended: true, limit: "64kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
-
+app.use(limiter);
 //routes
-
-import userRouter from "./routes/user.routes.js";
-import courseRouter from "./routes/courses.routes.js";
-import cartRouter from "./routes/cart.routes.js";
-import sectionRouter from "./routes/section.routes.js";
-import lessonRouter from "./routes/lessson.routes.js";
-import dashboardRouter from "./routes/dashboardboard.routes.js";
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/courses", courseRouter);
