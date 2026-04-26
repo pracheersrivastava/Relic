@@ -481,6 +481,7 @@ export const api = {
         const errorMessages: Record<number, string> = {
           400: 'Course already in cart',
           404: 'Course not found',
+          429: 'Too many requests. Please wait a moment and try again.',
         };
 
         return {
