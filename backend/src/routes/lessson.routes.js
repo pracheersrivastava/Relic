@@ -8,12 +8,13 @@ import {
     getCompletedLessonsOfSection
 } from "../controllers/lesson.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { optionalAuth } from "../middlewares/optionalAuth.middleware.js";
 
 const router = Router();
 
-// Protected route
+// Public route (lessons list for course preview)
 
-router.route("/sections/:sectionId/lessons").get(verifyJWT, getSectionLessons);
+router.route("/sections/:sectionId/lessons").get(optionalAuth, getSectionLessons);
 router.route("/:lessonId").get(verifyJWT, getLessonsById);
 router.route("/:lessonId/next-lesson").get(verifyJWT, getNextLesson);
 router.route("/:lessonId/mark-completed").post(verifyJWT, markLessonCompleted);

@@ -146,14 +146,12 @@ export const getAccessToken = (): string | null => {
   return null;
 };
 
-// Clear all auth data when token expires
+// Clear all auth data when token expires (no redirect - let pages handle auth state gracefully)
 const clearAuthOnExpiry = () => {
   accessToken = null;
   if (typeof window !== 'undefined') {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('user');
-    // Trigger a page reload to reset auth state
-    window.location.href = '/login';
   }
 };
 

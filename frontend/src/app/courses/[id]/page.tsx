@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './page.module.css';
 import { Header } from '@/components';
-import { api, Course, Section } from '@/lib/api';
+import { api, Course, Section, getAccessToken } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -58,6 +59,7 @@ export default function CourseDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const courseId = params.id as string;
+  const { isAuthenticated } = useAuth();
 
   const [course, setCourse] = useState<Course | null>(null);
   const [sections, setSections] = useState<SectionWithLessons[]>([]);
@@ -167,17 +169,28 @@ export default function CourseDetailsPage() {
   };
 
   const handleAddToCart = async () => {
-    if (!api.isAuthenticated()) {
+    // Re-check token directly from localStorage to avoid stale closures
+    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+    if (!token) {
       router.push('/login');
       return;
     }
     setIsAddingToCart(true);
     setCartMsg('');
-    const res = await api.addToCart(courseId);
-    if (res.success) {
-      setCartMsg('Added to cart!');
-    } else {
-      setCartMsg(res.message || 'Failed to add to cart');
+    try {
+      const res = await api.addToCart(courseId);
+      if (res.success) {
+        setCartMsg('Added to cart!');
+      } else {
+        // If session expired during the call, redirect to login
+        if (res.statusCode === 401) {
+          router.push('/login');
+          return;
+        }
+        setCartMsg(res.message || 'Failed to add to cart');
+      }
+    } catch {
+      setCartMsg('Failed to add to cart');
     }
     setIsAddingToCart(false);
   };
