@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './page.module.css';
-import { Header } from '@/components';
+import { Navbar } from '@/components';
 import { api, Course, Section, getAccessToken } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
@@ -203,7 +203,7 @@ export default function CourseDetailsPage() {
   if (isLoading) {
     return (
       <div className={styles.page}>
-        <Header />
+        <Navbar />
         <div className={styles.loadingScreen}>
           <div className={styles.spinner} />
           <p>Loading course details…</p>
@@ -216,7 +216,7 @@ export default function CourseDetailsPage() {
   if (error || !course) {
     return (
       <div className={styles.page}>
-        <Header />
+        <Navbar />
         <div className={styles.errorScreen}>
           <span className={styles.errorIcon}>⚠️</span>
           <h2>{error || 'Course not found'}</h2>
@@ -245,7 +245,7 @@ export default function CourseDetailsPage() {
   // ── Render: Main ─────────────────────────────────────────────────────────────
   return (
     <div className={styles.page}>
-      <Header />
+      <Navbar />
 
       {/* ── Breadcrumb ── */}
       <div className={styles.breadcrumb}>
