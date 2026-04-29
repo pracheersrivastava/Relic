@@ -190,8 +190,8 @@
 }
 
 .starFilled { color: #FFD580; }
-.starHalf   { color: #FFD580; opacity: 0.6; }
-.starEmpty  { color: rgba(255,255,255,0.3); }
+.starHalf   { color: #FFD580; opacity: 0.5; }
+.starEmpty  { color: rgba(255,255,255,0.15); }
 
 .ratingCount {
   font-size: var(--font-size-small);
@@ -761,6 +761,8 @@
 }
 
 .cardRating .starFilled { color: #F5A623; }
+.cardRating .starHalf   { color: #F5A623; opacity: 0.5; }
+.cardRating .starEmpty  { color: var(--color-border); }
 .cardRating .ratingNum  { color: var(--color-text-primary); font-size: var(--font-size-label); }
 .cardRating .ratingCount { color: var(--color-text-muted); font-size: 12px; }
 
