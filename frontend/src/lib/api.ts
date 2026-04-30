@@ -54,7 +54,7 @@ export interface CourseWithProgress extends Course {
 
 // Cart types
 export interface CartItem {
-  courseId: Course;
+  courseId: Course | string;
   price: number;
   addedAt: string;
 }

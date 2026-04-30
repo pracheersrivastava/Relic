@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { api, Cart, CartItem } from '@/lib/api';
+import { api, Cart, CartItem, getAccessToken } from '@/lib/api';
 import { useAuth } from './AuthContext';
 
 interface CartContextType {
@@ -48,8 +48,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [refreshCart]);
 
   const addToCart = useCallback(async (courseId: string) => {
-    // Check token directly to avoid stale isAuthenticated closure
-    const token = localStorage.getItem('accessToken');
+    const token = getAccessToken();
     if (!token) {
       return { success: false, message: 'Please login to add to cart' };
     }

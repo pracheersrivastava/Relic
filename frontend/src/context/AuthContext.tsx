@@ -45,6 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (response.success && response.data?.user) {
       setUser(response.data.user);
+      setAccessToken(response.data.accessToken);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       return { success: true, message: 'Login successful' };
     }
