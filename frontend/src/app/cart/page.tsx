@@ -19,10 +19,26 @@ export default function CartPage() {
     type: 'success'
   });
 
+  const toastTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ show: true, message, type });
-    setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
+    toastTimeoutRef.current = setTimeout(() => {
+      setToast({ show: false, message: '', type: 'success' });
+      toastTimeoutRef.current = null;
+    }, 3000);
   };
+
+  React.useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleRemove = async (courseId: string) => {
     const result = await removeFromCart(courseId);
@@ -83,10 +99,12 @@ export default function CartPage() {
   // Precompute subtotal once to avoid repeated work
   const computedSubtotal =
     cart?.totalPrice ??
-    (cart?.items || []).reduce(
-      (sum, item) => sum + (item.courseId?.price || item.price || 1),
-      0
-    );
+    (cart?.items || []).reduce((sum, item) => {
+      const course = typeof item.courseId === 'string'
+        ? { price: item.price || 0 }
+        : item.courseId;
+      return sum + (course.price || item.price || 1);
+    }, 0);
 
   // Empty cart state
   if (!cart || cartCount === 0) {
@@ -120,34 +138,39 @@ export default function CartPage() {
           <div className={styles.content}>
             {/* Cart Items */}
             <div className={styles.cartItems}>
-              {cart.items.map((item) => (
-                <div key={item.courseId._id} className={styles.cartItem}>
-                  <div className={styles.courseImage}>
-                    <span className={styles.courseBadge}>C</span>
-                  </div>
-                  <div className={styles.courseInfo}>
-                    <h3 className={styles.courseTitle}>{item.courseId.title}</h3>
-                    {item.courseId.subtitle && (
-                      <p className={styles.courseSubtitle}>{item.courseId.subtitle}</p>
-                    )}
-                    <div className={styles.courseMeta}>
-                      <span className={styles.rating}>★ 4.5</span>
-                      <span className={styles.students}>1,234 students</span>
+              {cart.items.map((item) => {
+                const course = typeof item.courseId === 'string'
+                  ? { _id: item.courseId, title: 'Course', price: item.price || 0, subtitle: undefined }
+                  : item.courseId;
+                return (
+                  <div key={course._id} className={styles.cartItem}>
+                    <div className={styles.courseImage}>
+                      <span className={styles.courseBadge}>C</span>
+                    </div>
+                    <div className={styles.courseInfo}>
+                      <h3 className={styles.courseTitle}>{course.title}</h3>
+                      {course.subtitle && (
+                        <p className={styles.courseSubtitle}>{course.subtitle}</p>
+                      )}
+                      <div className={styles.courseMeta}>
+                        <span className={styles.rating}>★ 4.5</span>
+                        <span className={styles.students}>1,234 students</span>
+                      </div>
+                    </div>
+                    <div className={styles.courseActions}>
+                      <button
+                        className={styles.removeButton}
+                        onClick={() => handleRemove(course._id)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className={styles.coursePrice}>
+                      <span className={styles.price}>${course.price.toFixed(2)}</span>
                     </div>
                   </div>
-                  <div className={styles.courseActions}>
-                    <button
-                      className={styles.removeButton}
-                      onClick={() => handleRemove(item.courseId._id)}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                  <div className={styles.coursePrice}>
-                    <span className={styles.price}>${(item.courseId.price || item.price || 1).toFixed(2)}</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Order Summary */}
