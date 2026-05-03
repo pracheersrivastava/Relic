@@ -7,7 +7,7 @@ import {
   partners,
   HomepageCourse
 } from '@/data/homepageData';
-import { api, Course } from '@/lib/api';
+import { api, Course, getAccessToken } from '@/lib/api';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
@@ -51,6 +51,7 @@ export default function HomePage() {
   const [loadingCourses, setLoadingCourses] = useState(true);
   const { user, isAuthenticated } = useAuth();
   const { addToCart } = useCart();
+  const toastTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({
     show: false,
     message: '',
@@ -77,12 +78,25 @@ export default function HomePage() {
 
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ show: true, message, type });
-    setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
+    toastTimeoutRef.current = setTimeout(() => {
+      setToast({ show: false, message: '', type: 'success' });
+      toastTimeoutRef.current = null;
+    }, 3000);
   };
 
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleAddToCart = async (courseId: string) => {
-    // Check user directly instead of isAuthenticated to avoid stale closure
-    const token = localStorage.getItem('accessToken');
+    const token = getAccessToken();
     if (!token && !user) {
       showToast('Please login to add courses to cart', 'error');
       return;

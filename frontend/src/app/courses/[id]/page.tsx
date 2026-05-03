@@ -117,7 +117,7 @@ export default function CourseDetailsPage() {
           const sectionsWithLessons: SectionWithLessons[] = await Promise.all(
             sectionsRes.data.map(async (section) => {
               try {
-                const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+                const token = getAccessToken();
                 const res = await fetch(
                   `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api/v1'}/lessons/sections/${section._id}/lessons`,
                   {
@@ -169,8 +169,7 @@ export default function CourseDetailsPage() {
   };
 
   const handleAddToCart = async () => {
-    // Re-check token directly from localStorage to avoid stale closures
-    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+    const token = getAccessToken();
     if (!token) {
       router.push('/login');
       return;

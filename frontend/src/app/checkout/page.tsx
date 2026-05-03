@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Navbar } from '@/components';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
+import { getAccessToken } from '@/lib/api';
 import styles from './page.module.css';
 
 export default function CheckoutPage() {
@@ -20,8 +21,7 @@ export default function CheckoutPage() {
         setError(null);
 
         try {
-            // Get token from localStorage
-            const accessToken = localStorage.getItem('accessToken');
+            const accessToken = getAccessToken();
             if (!accessToken) {
                 setError('Please login to continue');
                 setIsProcessing(false);
@@ -104,7 +104,12 @@ export default function CheckoutPage() {
         );
     }
 
-    const totalAmount = cart.totalPrice || cart.items.reduce((sum, item) => sum + (item.courseId?.price || item.price || 0), 0);
+    const totalAmount = cart.totalPrice || cart.items.reduce((sum, item) => {
+        const course = typeof item.courseId === 'string'
+            ? { price: item.price || 0 }
+            : item.courseId;
+        return sum + (course.price || item.price || 0);
+    }, 0);
 
     return (
         <div className={styles.page}>
@@ -127,18 +132,24 @@ export default function CheckoutPage() {
                             <h3 className={styles.sectionTitle}>Order Summary</h3>
 
                             <div className={styles.courseList}>
-                                {cart.items.map((item) => (
-                                    <div key={item.courseId._id} className={styles.courseItem}>
-                                        <div className={styles.courseBadge}>C</div>
-                                        <div className={styles.courseDetails}>
-                                            <h4>{item.courseId.title}</h4>
-                                            {item.courseId.subtitle && <p>{item.courseId.subtitle}</p>}
+                                {cart.items.map((item) => {
+                                    const course = typeof item.courseId === 'string'
+                                        ? { _id: item.courseId, title: 'Course', price: item.price || 0, subtitle: undefined }
+                                        : item.courseId;
+
+                                    return (
+                                        <div key={course._id} className={styles.courseItem}>
+                                            <div className={styles.courseBadge}>C</div>
+                                            <div className={styles.courseDetails}>
+                                                <h4>{course.title}</h4>
+                                                {course.subtitle && <p>{course.subtitle}</p>}
+                                            </div>
+                                            <span className={styles.coursePrice}>
+                                                ${(course.price || item.price || 0).toFixed(2)}
+                                            </span>
                                         </div>
-                                        <span className={styles.coursePrice}>
-                                            ${(item.courseId.price || item.price || 0).toFixed(2)}
-                                        </span>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
 
                             <div className={styles.summaryDivider} />
