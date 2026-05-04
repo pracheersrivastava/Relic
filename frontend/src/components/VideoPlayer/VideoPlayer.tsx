@@ -29,6 +29,7 @@ declare global {
             };
         };
         onYouTubeIframeAPIReady?: () => void;
+        __youtubeIframeAPIReadyCallbacks?: Array<() => void>;
     }
 }
 
@@ -118,44 +119,6 @@ export function VideoPlayer({ videoUrl, lessonTitle, nextLesson, onEnded, onProg
 
     const youtubeVideoId = getYouTubeVideoId(videoUrl);
 
-    // Load YouTube IFrame API
-    useEffect(() => {
-        if (!youtubeVideoId) {
-            setIsYouTube(false);
-            return;
-        }
-
-        setIsYouTube(true);
-        setIsLoading(true);
-        setError(null);
-
-        // Check if API is already loaded
-        if (window.YT && window.YT.Player) {
-            initializePlayer();
-            return;
-        }
-
-        // Load YouTube IFrame API
-        const tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-
-        window.onYouTubeIframeAPIReady = () => {
-            initializePlayer();
-        };
-
-        return () => {
-            if (playerRef.current) {
-                playerRef.current.destroy();
-                playerRef.current = null;
-            }
-            if (progressInterval.current) {
-                clearInterval(progressInterval.current);
-            }
-        };
-    }, [youtubeVideoId]);
-
     const initializePlayer = useCallback(() => {
         if (!youtubeVideoId || !window.YT) return;
 
@@ -236,6 +199,58 @@ export function VideoPlayer({ videoUrl, lessonTitle, nextLesson, onEnded, onProg
             },
         });
     }, [youtubeVideoId, onEnded, onProgress]);
+
+    // Load YouTube IFrame API
+    useEffect(() => {
+        if (!youtubeVideoId) {
+            setIsYouTube(false);
+            return;
+        }
+
+        setIsYouTube(true);
+        setIsLoading(true);
+        setError(null);
+
+        const enqueueInitialize = () => {
+            initializePlayer();
+        };
+
+        if (window.YT && window.YT.Player) {
+            enqueueInitialize();
+            return;
+        }
+
+        if (!window.__youtubeIframeAPIReadyCallbacks) {
+            window.__youtubeIframeAPIReadyCallbacks = [];
+        }
+
+        window.__youtubeIframeAPIReadyCallbacks.push(enqueueInitialize);
+
+        if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+            const tag = document.createElement('script');
+            tag.src = 'https://www.youtube.com/iframe_api';
+            document.head.appendChild(tag);
+
+            const previousCallback = window.onYouTubeIframeAPIReady;
+            window.onYouTubeIframeAPIReady = () => {
+                window.__youtubeIframeAPIReadyCallbacks?.forEach((cb) => cb());
+                window.__youtubeIframeAPIReadyCallbacks = [];
+                if (typeof previousCallback === 'function') {
+                    previousCallback();
+                }
+            };
+        }
+
+        return () => {
+            if (playerRef.current) {
+                playerRef.current.destroy();
+                playerRef.current = null;
+            }
+            if (progressInterval.current) {
+                clearInterval(progressInterval.current);
+            }
+        };
+    }, [youtubeVideoId, initializePlayer]);
 
     // Reinitialize when video changes
     useEffect(() => {
