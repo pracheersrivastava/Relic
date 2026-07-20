@@ -17,13 +17,25 @@ const limiter = rateLimit({
     standardHeaders: 'draft-8',
 })
 
+const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'http://localhost:3003',
+];
+
+if (process.env.FRONTEND_URL) {
+    allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 app.use(cors({
-    origin: [
-        'http://localhost:3000',
-        'http://localhost:3001',
-        'http://localhost:3002',
-        'http://localhost:3003'
-    ],
+    origin(origin, callback) {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin)) {
+            return callback(null, true);
+        }
+        return callback(null, false);
+    },
     credentials: true
 }));
 app.use(express.json({ limit: '64kb' })); //setting JSON limit

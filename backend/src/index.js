@@ -29,13 +29,15 @@ app.on("error", (error) => {
     throw error;
 });
 
-// Start HTTP server
-getDbConnection().then(() => {
-    const PORT = process.env.PORT || 8000;
-    app.listen(PORT, () => {
-        console.log(`Server is running at port: ${PORT}`);
-        startCronJob();
+// Start HTTP server locally only (Vercel uses serverless export)
+if (!process.env.VERCEL) {
+    getDbConnection().then(() => {
+        const PORT = process.env.PORT || 8000;
+        app.listen(PORT, () => {
+            console.log(`Server is running at port: ${PORT}`);
+            startCronJob();
+        });
     });
-});
+}
 
 export default app;
