@@ -4,6 +4,10 @@ import connectDB from "../db/DB.connect.js";
 let dbPromise = null;
 
 const ensureDbConnected = async (req, res, next) => {
+    if (req.path === '/api/v1/health' || req.path === '/') {
+        return next();
+    }
+
     try {
         if (mongoose.connection.readyState === 1) {
             return next();
