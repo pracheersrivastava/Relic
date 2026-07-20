@@ -43,7 +43,7 @@ flowchart TB
     end
 
     subgraph Atlas["MongoDB Atlas — Relic"]
-        DB[("taligent DB")]
+        DB[("relic DB")]
     end
 
     subgraph External["External"]
@@ -291,7 +291,7 @@ npm run dev            # http://localhost:3000
 
 ### Backend `.env`
 ```env
-MONGODB_URI=mongodb+srv://<user>:<pass>@<cluster>/taligent
+MONGODB_URI=mongodb+srv://<user>:<pass>@<cluster>/relic
 PORT=5000
 ACCESS_TOKEN_SECRET=your_secret
 REFRESH_TOKEN_SECRET=your_secret

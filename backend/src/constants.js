@@ -1,1 +1,1 @@
-export const DB_NAME = "taligent"
+export const DB_NAME = "relic"
