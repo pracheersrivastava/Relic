@@ -8,6 +8,7 @@ import cartRouter from "./routes/cart.routes.js";
 import sectionRouter from "./routes/section.routes.js";
 import lessonRouter from "./routes/lessson.routes.js";
 import dashboardRouter from "./routes/dashboardboard.routes.js";
+import { ensureDbConnected } from "./middlewares/db.middleware.js";
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use(express.urlencoded({ extended: true, limit: "64kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 app.use(limiter);
+app.use(ensureDbConnected);
 //routes
 
 app.use("/api/v1/users", userRouter);

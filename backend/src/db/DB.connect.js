@@ -3,6 +3,10 @@ import { DB_NAME } from "../constants.js";
 
 
 const connectDB = async () => {
+    if (mongoose.connection.readyState >= 1) {
+        return mongoose.connection;
+    }
+
     try {
         let uri = process.env.MONGODB_URI;
 
@@ -13,6 +17,7 @@ const connectDB = async () => {
 
         const connectionInstance = await mongoose.connect(finalUri);
         console.log(`\n MongoDB connected. DB Host ${connectionInstance.connection.host}`);
+        return connectionInstance;
     } catch (error) {
         console.error("MONGODB connection error", error);
         // Don't exit process in serverless - throw error instead
