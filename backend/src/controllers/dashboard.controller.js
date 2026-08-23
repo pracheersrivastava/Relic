@@ -1,5 +1,4 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
 import { ApiResponce } from "../utils/ApiResponce.js";
 import { User } from "../models/user.model.js";
 import { Order } from "../models/order.model.js";
@@ -17,11 +16,7 @@ const getDashboardStats = asyncHandler(async (req, res) => {
             }
         }
     ]);
-    const totalRevenue = totalRevenueData[0] ? totalRevenueData[0].totalRevenue : 0;
-
-    if (!totalUsers || !totalOrders || !totalCourses) {
-        throw new ApiError(404, "No statistics found");
-    }
+    const totalRevenue = totalRevenueData[0]?.totalRevenue ?? 0;
 
     return res.status(200).json(
         new ApiResponce(
